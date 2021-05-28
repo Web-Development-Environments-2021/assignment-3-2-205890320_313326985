@@ -8,7 +8,7 @@ require("dotenv").config();
 var express = require("express");
 var path = require("path");
 const session = require("client-sessions");
-var logger = require("morgan");
+var logger2 = require("morgan");
 var cors = require("cors");
 
 var app = express();
