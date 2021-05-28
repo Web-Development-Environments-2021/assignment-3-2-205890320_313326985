@@ -1,10 +1,10 @@
 CREATE TABLE [dbo].[Matches](
-	[Match_id] [int] IDENTITY(1,1) NOT NULL,
-	[Date_time] [DATETIME] NOT NULL , 
-	[Local_team_id] [int] NOT NULL , 
-	[Visitor_team_id] [int] NOT NULL ,
-	[Venue_id] [int] NOT NULL ,
-	[Referee_id] [int] NOT NULL ,
-	[Home_goals] [int] NOT NULL ,
-	[Away_goals] [int] NOT NULL
+	[match_id] [int] PRIMARY KEY NOT NULL,
+	[date_time] [DATETIME] NOT NULL , 
+	[local_team_id] [int] NOT NULL , 
+	[visitor_team_id] [int] NOT NULL ,
+	[venue_id] [int] NOT NULL ,
+	[referee_id] [int] NOT NULL ,
+	[home_goals] [int] NOT NULL ,
+	[away_goals] [int] NOT NULL
 )
