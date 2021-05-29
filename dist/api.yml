@@ -320,7 +320,7 @@ paths:
         explode: true
         schema:
           type: string
-        example: Maccabi
+        example: Midtjylland
       - name: sort
         in: query
         description: type of sort

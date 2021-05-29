@@ -53,7 +53,7 @@ const league = require("./routes/league");
 const teams = require("./routes/teams");
 const matches = require("./routes/matches");
 const unionAgent = require("./routes/unionAgent");
-
+const search = require("./routes/search");
 //#endregion
 
 //#region cookie middleware
@@ -82,6 +82,7 @@ app.use("/league", league);
 app.use("/teams", teams);
 app.use("/matches", matches);
 app.use("/UnionAgent", unionAgent);
+app.use("/search", search);
 app.use(auth);
 
 app.use(function (err, req, res, next) {

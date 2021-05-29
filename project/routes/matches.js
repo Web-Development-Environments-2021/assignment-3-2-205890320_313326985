@@ -68,7 +68,6 @@ router.post("/favoriteMatches", async (req, res, next) => {
     `insert into dbo.FavoriteMatches values ('${user_id}','${match_id}')`
     );
   }
-  return 0;
 }
 
 
