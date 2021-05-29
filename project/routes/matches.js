@@ -24,7 +24,7 @@ router.use(async function (req, res, next) {
 /**
  * This path returns the favorites matches that were saved by the logged-in user
  */
- router.get("/favoriteMatches", async (req, res, next) => {
+router.get("/favoriteMatches", async (req, res, next) => {
   try {
     const user_id = req.session.user_id;
     const match_ids = await matches_utils.getFavoriteMatches(user_id);
@@ -45,7 +45,6 @@ router.post("/favoriteMatches", async (req, res, next) => {
    const user_id = req.session.user_id;
    const match_Id_from_body = req.body.match_id;
    await markMatchAsFavorite(user_id, match_Id_from_body);
-   res.status(201).send("The match successfully saved as favorite");
  } catch (error) {
    next(error);
  }
@@ -69,6 +68,7 @@ router.post("/favoriteMatches", async (req, res, next) => {
     `insert into dbo.FavoriteMatches values ('${user_id}','${match_id}')`
     );
   }
+  return 0;
 }
 
 

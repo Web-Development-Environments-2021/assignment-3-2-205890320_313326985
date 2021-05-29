@@ -118,7 +118,6 @@ paths:
       tags:
         - Matches
       summary: Return the favorite matches that were saved by user
-      parameters:
       responses:
         "200":
           description: data about the user's favorites matches returned
