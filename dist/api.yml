@@ -418,6 +418,9 @@ components:
         venue_id:
           type: integer
           example: 8909
+        referee_id:
+          type: integer
+          example: 89
         home_goals:
           type: integer
           example: 5
