@@ -36,6 +36,7 @@ router.post("/addMatch", async (req, res, next) => {
   catch (error){
     next(error);
   }
+  res.status(201).send("The match successfully saved to the system");
 });
 
 // /**
