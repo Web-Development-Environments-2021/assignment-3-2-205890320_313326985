@@ -81,7 +81,6 @@ paths:
     get:
       tags:
         - Users
-        - Matches
       summary: Return the favorite matches that were saved by user
       parameters:
       responses:
@@ -99,6 +98,41 @@ paths:
       summary: save match in the favorites list of a user
       tags:
         - Users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                match_id:
+                  type: string
+                  description: match's id which the user saved
+                  example: 85
+      responses:
+        "201":
+          description: The match successfully saved as favorite
+        "401":
+          description: user is not authorized
+  /matches/favoriteMatches:
+    get:
+      tags:
+        - Matches
+      summary: Return the favorite matches that were saved by user
+      parameters:
+      responses:
+        "200":
+          description: data about the user's favorites matches returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MatchPreview"
+        "401":
+          description: user is not authorized
+    post:
+      summary: save match in the favorites list of a user
+      tags:
         - Matches
       requestBody:
         content:
@@ -106,7 +140,7 @@ paths:
             schema:
               type: object
               properties:
-                playerId:
+                match_id:
                   type: string
                   description: match's id which the user saved
                   example: 85
@@ -274,7 +308,7 @@ components:
           type: string
           description: user's email
           example: ladygaga@gmail.com
-        image-url:
+        image_url:
           pattern: URL
           type: string
           description: URL for the user's image
