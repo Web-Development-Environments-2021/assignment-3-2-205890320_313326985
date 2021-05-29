@@ -305,6 +305,126 @@ paths:
           description: You have not authenticated yet, please sign in
         "404":
           description: The server can not find the requested resource
+
+  /search/Teams:
+    get:
+      tags:
+      - Search
+      summary: Search for teams by name
+      parameters:
+      - name: query
+        in: query
+        description: The query we want to search
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: Maccabi
+      - name: sort
+        in: query
+        description: type of sort
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+            default: none
+            enum:
+            - asc
+            - desc
+            - none
+        example: asc
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SearchTeams'
+        "204":
+          description: There is no content to send for this request
+        "401":
+          description: You have not authenticated yet, please sign in
+        "404":
+          description: The server can not find the requested resource
+  /search/Players:
+    get:
+      tags:
+      - Search
+      summary: Search for players by name
+      parameters:
+      - name: query
+        in: query
+        description: The query we want to search
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: David
+      - name: sort
+        in: query
+        description: type of sort
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+            default: none
+            enum:
+            - asc
+            - desc
+            - none
+        example: asc
+      - name: filter
+        in: query
+        description: how to filter results, can be done by position of player or by team name
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+            default: none
+            enum:
+            - team name
+            - player's position
+            - none
+        example: player's position
+      - name: filter query
+        in: query
+        description: which value do you want to be in the filter
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: 3
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlayerPreview'
+        "204":
+          description: There is no content to send for this request
+        "401":
+          description: You have not authenticated yet, please sign in
+        "404":
+          description: The server can not find the requested resource
+
+  
 components:
   schemas:
     User:
@@ -456,4 +576,14 @@ components:
         type:
           type: string
           example: yellowcard
+    SearchTeams:
+      type: object
+      properties:
+        team name:
+          type: string
+          example: Midtjylland
+        logo path:
+          type: string
+          format: URL
+          example: https://cdn.sportmonks.com/images//soccer/teams/11/939.png
       
