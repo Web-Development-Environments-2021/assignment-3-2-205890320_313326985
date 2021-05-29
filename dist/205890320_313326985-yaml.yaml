@@ -986,6 +986,27 @@ components:
           format: URL
           example: https://cdn.sportmonks.com/images//soccer/teams/11/939.png
     LeagueManagementMatches:
+    Referee:
+      type: object
+      properties:
+        referee_id:
+          type: integer
+          example: 1356
+        firstname:
+          type: string
+          example: Michael
+        lastname:
+          type: string
+          example: Gorodinsky
+        course:
+          type: array
+          items:
+            type: string
+            default: Regular
+            enum:
+            - Regular
+            - Main
+          example: Regular
       type: object
       properties:
         pastMatches:

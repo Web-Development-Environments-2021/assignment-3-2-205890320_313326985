@@ -6,10 +6,10 @@ info:
 tags:
   - name: Users
   - name: Auth
-  - name: League
   - name: Players
   - name: Teams
   - name: Matches
+  - name: UnionAgent
 paths:
   /Register:
     post:
@@ -155,8 +155,6 @@ paths:
         "401":
           description: user is not authorized
 
-
-
   /teams/teamFullDetails/{teamId}:
     get:
       summary: get full deatils about a team
@@ -180,7 +178,110 @@ paths:
         "404":
           description: teamId is not exists
 
-          
+  /UnionAgent/ConnectRefereeToMatch:
+    post:
+      tags:
+      - UnionAgent
+      summary: Connect a referee to a match
+      parameters:
+      - name: referee_id
+        in: query
+        required: true
+        schema:
+          type: int
+        example: 1854
+      - name: match_id
+        in: query
+        required: true
+        schema:
+          type: int
+        example: 19246
+      responses:
+        "201":
+          description: successful operation
+        "400":
+          description: it is not a valid match ID or not valid referee ID
+        "401":
+          description: You have not authenticated yet, please sign in
+
+
+  /UnionAgent/addEventsLog:
+    post:
+      tags:
+      - UnionAgent
+      summary: add events log to past match in system
+      parameters:
+      - name: match_id
+        in: query
+        description: ID of past match
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int64
+        example: 16475
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Event'
+        required: true
+      responses:
+        "201":
+          description: successful operation
+        "204":
+          description: There is no content to send for this request
+        "400":
+          description: it is not a valid past match ID
+        "401":
+          description: You have not authenticated yet, please sign in
+        "404":
+          description: The server can not find the requested resource
+
+  /UnionAgent/UpdateResultsToPastMatch:
+    put:
+      tags:
+      - UnionAgent
+      summary: Update match results in past match to system
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MatchPreview'
+        required: true
+      responses:
+        "201":
+          description: successful operation
+        "204":
+          description: There is no content to update for this request
+        "400":
+          description: it is not a valid past match ID
+        "401":
+          description: You have not authenticated yet, please sign in
+  /UnionAgent/addMatch:  
+    post:
+      tags:
+      - UnionAgent
+      summary: add new match to the system
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MatchPreview'
+        required: true
+      responses:
+        "201":
+          description: successful operation
+        "204":
+          description: There is no content to send for this request
+        "401":
+          description: You have not authenticated yet, please sign in
+        "404":
+          description: The server can not find the requested resource
+
 components:
   schemas:
     User:
@@ -275,6 +376,30 @@ components:
           type: string
           description: player's team name
           example: København
+    MatchPreview:
+      type: object
+      properties:
+        match_id:
+          type: integer
+          example: 53
+        date_time:
+          type: string
+          format: date-time
+        local_team_id:
+          type: integer
+          example: 53
+        visitor_team_id:
+          type: integer
+          example: 338
+        venue_id:
+          type: integer
+          example: 8909
+        home_goals:
+          type: integer
+          example: 5
+        away_goals:
+          type: integer
+          example: 3
     Team:
       type: object
       properties:
@@ -287,3 +412,22 @@ components:
           items:
             type: object
             $ref: "#/components/schemas/PlayerPreview"
+    Event:
+      type: object
+      properties:
+        event_id:
+          type: integer
+          example: 13
+        match_id:
+          type: integer
+          example: 18439
+        date_and_time_happend:
+          type: string
+          format: date-time
+        minute:
+          type: integer
+          example: 17
+        type:
+          type: string
+          example: yellowcard
+      
