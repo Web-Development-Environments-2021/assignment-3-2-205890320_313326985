@@ -5,9 +5,17 @@ const team_utils = require("./utils/teams_utils");
 
 
 router.get("/Teams", async (req, res, next) => {
-  const team_name_to_search = req.query.query;
-  const sort_way = req.query.sort;
-  const team_ids_list = await team_utils.getTeamsByName(team_name_to_search);
+  try{
+    const team_name_to_search = req.query.query;
+    const sort_way = req.query.sort;
+    const team_list = await team_utils.getTeamsByName(team_name_to_search);
+    const results = await team_utils.extractRelevantTeamData(team_list);
+    res.status(201).send(results);
+  }
+  catch (error) {
+  next(error);
+  }
+ 
 });
 
 
