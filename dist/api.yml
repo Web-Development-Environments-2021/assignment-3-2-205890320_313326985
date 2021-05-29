@@ -9,7 +9,7 @@ tags:
   - name: League
   - name: Players
   - name: Teams
-  - name: Games
+  - name: Matches
 paths:
   /Register:
     post:
@@ -116,6 +116,47 @@ paths:
           description: The player successfully saved as favorite
         "401":
           description: user is not authorized
+  /users/favoriteMatches:
+    get:
+      tags:
+        - Users
+        - Matches
+      summary: Return the favorite matches that were saved by user
+      parameters:
+      responses:
+        "200":
+          description: data about the user's favorites matches returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MatchPreview"
+        "401":
+          description: user is not authorized
+    post:
+      summary: save match in the favorites list of a user
+      tags:
+        - Users
+        - Matches
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                playerId:
+                  type: string
+                  description: match's id which the user saved
+                  example: 85
+      responses:
+        "201":
+          description: The match successfully saved as favorite
+        "401":
+          description: user is not authorized
+
+
+
   /teams/teamFullDetails/{teamId}:
     get:
       summary: get full deatils about a team
@@ -138,6 +179,8 @@ paths:
                 $ref: "#/components/schemas/Team"
         "404":
           description: teamId is not exists
+
+          
 components:
   schemas:
     User:
