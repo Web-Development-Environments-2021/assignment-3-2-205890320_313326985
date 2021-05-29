@@ -105,7 +105,7 @@ paths:
               type: object
               properties:
                 match_id:
-                  type: string
+                  type: int
                   description: match's id which the user saved
                   example: 85
       responses:
@@ -141,7 +141,7 @@ paths:
               type: object
               properties:
                 match_id:
-                  type: string
+                  type: int
                   description: match's id which the user saved
                   example: 85
       responses:

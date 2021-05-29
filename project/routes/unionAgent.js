@@ -24,7 +24,17 @@ router.get("/UnionAgent", async (req, res, next) => {
   }
 });
 
-
+// liad's dummy func
+router.post("/addMatch", async (req, res, next) => {
+  try {
+    // insert match to Matches table
+    await DButils.execQuery(
+        `INSERT INTO dbo.Matches (match_id,date_time,local_team_id,visitor_team_id,venue_id) VALUES ('${req.body.match_id}','${req.body.date_time}', '${req.body.local_team_id}', '${req.body.visitor_team_id}', '${req.body.venue_id}','${req.body.referee_id}')`
+    );
+  }
+  catch (error){
+    next(error);
+  }
 
 // /**
 //  * Authenticate all incoming requests by middleware
