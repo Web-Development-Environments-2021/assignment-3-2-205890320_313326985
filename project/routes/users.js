@@ -9,7 +9,7 @@ const players_utils = require("./utils/players_utils");
  */
 router.use(async function (req, res, next) {
   if (req.session && req.session.user_id) {
-    DButils.execQuery("SELECT user_id FROM Users")
+    DButils.execQuery("SELECT user_id FROM dbo.Users")
       .then((users) => {
         if (users.find((x) => x.user_id === req.session.user_id)) {
           req.user_id = req.session.user_id;
@@ -74,16 +74,16 @@ router.use(async function (req, res, next) {
 /**
  * This path gets body with matchId and save this match in the favorites list of the logged-in user
  */
- router.post("/favoriteMatches", async (req, res, next) => {
-  try {
-    const user_id = req.session.user_id;
-    const match_Id_from_body = req.body.matchId;
-    await users_utils.markMatchAsFavorite(user_id, match_Id_from_body);
-    res.status(201).send("The match successfully saved as favorite");
-  } catch (error) {
-    next(error);
-  }
-});
+//  router.post("/favoriteMatches", async (req, res, next) => {
+//   try {
+//     const user_id = req.session.user_id;
+//     const match_Id_from_body = req.body.matchId;
+//     await users_utils.markMatchAsFavorite(user_id, match_Id_from_body);
+//     res.status(201).send("The match successfully saved as favorite");
+//   } catch (error) {
+//     next(error);
+//   }
+// });
 
 
 
