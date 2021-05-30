@@ -13,7 +13,7 @@ async function getTeamsByName(team_name) {
   teams.data.data.map((team_info) =>
     team_info_list.push(team_info)
   );
-  return team_info_list;
+  return team_ids_list;
 }
 
 // async function getTeamsInfo(team_ids_list) {

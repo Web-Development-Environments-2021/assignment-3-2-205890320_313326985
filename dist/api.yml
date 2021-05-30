@@ -93,6 +93,8 @@ paths:
                   $ref: "#/components/schemas/MatchPreview"
         "401":
           description: user is not authorized
+        "204":
+          description: This user does not have any favorite matches
     post:
       summary: save match in the favorites list of a user
       tags:

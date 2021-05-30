@@ -1,7 +1,6 @@
 var express = require("express");
 var router = express.Router();
 const DButils = require("./utils/DButils");
-// const users_utils = require("./utils/users_utils");
 const matches_utils = require("./utils/matches_utils"); 
 const matches = require("./matches");
 
@@ -30,6 +29,9 @@ router.use(async function (req, res, next) {
   try {
     const user_id = req.session.user_id;
     const match_ids = await matches_utils.getFavoriteMatches(user_id);
+    if(match_ids.length == 0){
+      throw { status: 204, message: "This user does not have any favorite matches" };
+    }
     let match_ids_array = [];
     match_ids.map((element) => match_ids_array.push(element.match_id)); //extracting the match's ids into array
     const results = await matches_utils.getMatchesInfo(match_ids_array);

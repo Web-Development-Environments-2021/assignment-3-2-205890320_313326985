@@ -1,5 +1,6 @@
 const axios = require("axios");
 const api_domain = "https://soccer.sportmonks.com/api/v2.0";
+const DButils = require("./DButils");
 const SEASON_ID = 17328;
 
 
@@ -29,7 +30,7 @@ function extractRelevantPlayerData(players_info) {
       team_name: name,
     };
   });
-const DButils = require("./DButils");
+}
 
 async function getMatchesInfo(matches_ids_list) {
   let promises = [];
@@ -53,5 +54,3 @@ async function getFavoriteMatches(user_id){
 exports.getAllMatchesID = getAllMatchesID;
 exports.getMatchesInfo = getMatchesInfo;
 exports.getFavoriteMatches = getFavoriteMatches;
-
-}
