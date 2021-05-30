@@ -197,17 +197,17 @@ paths:
       tags:
       - UnionAgent
       summary: add events log to past match in system
-      # parameters:
-      # - name: match_id
-      #   in: query
-      #   description: ID of past match
-      #   required: true
-      #   style: simple
-      #   explode: false
-      #   schema:
-      #     type: integer
-      #     format: int64
-      #   example: 16475
+      parameters:
+      - name: match_id
+        in: query
+        description: ID of past match
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int64
+        example: 16475
       requestBody:
         content:
           application/json:
@@ -225,7 +225,7 @@ paths:
           description: You have not authenticated yet, please sign in
         "404":
           description: The server can not find the requested resource
-  /UnionAgent/UpdateResultsToPastMatch:
+  /UnionAgent/UpdateResultsToMatch:
     put:
       tags:
       - UnionAgent
@@ -535,7 +535,7 @@ components:
           example: 17
         type:
           type: string
-          example: yellowcard
+          example: Yellow Card
     SearchTeams:
       type: object
       properties:

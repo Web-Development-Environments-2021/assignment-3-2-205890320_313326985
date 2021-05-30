@@ -24,7 +24,7 @@ router.get("", async (req, res, next) => {
       matches.sort((a,b) => b.date_time - a.date_time);
     }
 
-    // sort by tam id ascending
+    // sort by local tam id ascending
     else if (sort == 'Teams'){
       matches.sort((a,b) => a.local_team_id - b.local_team_id);
     }
@@ -96,34 +96,30 @@ router.post("/ConnectRefereeToMatch", async (req, res, next) => {
 });
 
 
-// add referee to matche from the matches table in DB
-router.post("/ConnectRefereeToMatch", async (req, res, next) => {
+// add event log to match from the matches table in DB
+router.post("/addEventsLog", async (req, res, next) => {
   try {
     // parameters exists
     // valid parameters
-    const referees = await DButils.execQuery(
-      "SELECT referee_id FROM dbo.Referees"
-    );
     const matches = await DButils.execQuery(
       "SELECT match_id FROM dbo.Matches"
     );
 
     const match_id = parseInt(req.query.match_id);
-    const referee_id = parseInt(req.query.referee_id);
+    const eventLogs = req.body;
 
-
-    // Check if the match id and referee id exist in the match table
-    if (matches.find((x) => x.match_id === match_id) && referees.find((x) => x.referee_id === referee_id)){
-      // update the referee id in the matches table
-      await DButils.execQuery(
-        `UPDATE dbo.Matches
-        SET referee_id = '${referee_id}'
-        WHERE match_id = '${match_id}';`
-      );
+    if (matches.find((x) => x.match_id === match_id)){
+      for(var i = 0 ; i < eventLogs.length; i++){
+        const x = req.body[i].date_and_time_happend;
+        await DButils.execQuery(
+          `INSERT INTO dbo.Events (match_id,date_and_time_happend,minute,type) VALUES ('${match_id}', '${eventLogs[i].date_and_time_happend}', '${eventLogs[i].minute}', '${eventLogs[i].type}')`
+        );
+      }
     }
     else{
-      throw { status: 400, message: "it is not a valid match ID or not valid referee ID" };
-    }
+      throw { status: 400, message: "	it is not a valid match ID" };
+    }  
+
       
     res.status(201).send("successful operation");
   } catch (error) {
@@ -132,8 +128,8 @@ router.post("/ConnectRefereeToMatch", async (req, res, next) => {
 });
 
 
-// add referee to matche from the matches table in DB
-router.post("/addEventsLog", async (req, res, next) => {
+// update match score of a match in matches table in DB
+router.put("/UpdateResultsToMatch", async (req, res, next) => {
   try {
     // parameters exists
     // valid parameters
@@ -143,17 +139,16 @@ router.post("/addEventsLog", async (req, res, next) => {
 
     const match_id = parseInt(req.body.match_id);
 
-    // Check if the match id and referee id exist in the match table
     if (matches.find((x) => x.match_id === match_id)){
-      // insert event to a match in events table
       await DButils.execQuery(
-        `INSERT INTO dbo.Events (match_id,date_and_time_happened,minute,type) VALUES ('${match_id}', '${req.body.date_and_time_happened}', '${req.body.minute}', '${req.body.type}')`
+        `UPDATE dbo.Matches
+        SET home_goals = '${req.body.home_goals}', away_goals = '${req.body.away_goals}'
+        WHERE match_id = '${match_id}';`
       );
-      }
+    }
     else{
       throw { status: 400, message: "	it is not a valid match ID" };
-    }
-
+    }  
 
       
     res.status(201).send("successful operation");
@@ -162,20 +157,8 @@ router.post("/addEventsLog", async (req, res, next) => {
   }
 });
 
+
 module.exports = router;
-// router.use(async function (req, res, next) {
-//   if (req.session && req.session.user_id) {
-//     DButils.execQuery("SELECT user_id FROM dbo.Users")
-//       .then((users) => {
-//         if (users.find((x) => x.user_id === req.session.user_id)) {
-//           req.user_id = req.session.user_id;
-//           next();
-//         }
-//       })
-//       .catch((err) => next(err));
-//   } else {
-//     res.sendStatus(401);
-//   }
-// });
+
 
 
