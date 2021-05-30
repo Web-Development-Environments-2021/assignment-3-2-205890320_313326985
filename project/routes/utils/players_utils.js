@@ -17,7 +17,7 @@ async function getPlayersByNameAndTeam(player_name){
   return player_info_list;
 }
 
-
+// get from data we have got from http req' the relevant to response
 function extractRelevantPlayerData(players_info) {
   return players_info.map((player_info) => {
     const { fullname, image_path, position_id } = player_info;
