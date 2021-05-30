@@ -3,16 +3,17 @@ const api_domain = "https://soccer.sportmonks.com/api/v2.0";
 // const TEAM_ID = "85";
 
 async function getTeamsByName(team_name) {
-  let team_ids_list = [];
-  const team = await axios.get(`${api_domain}/teams/search/${team_name}`, {
+  let team_info_list = [];
+  const teams = await axios.get(`${api_domain}/teams/search/${team_name}`, {
     params: {
       api_token: process.env.api_token,
+      include:'season'
     },
   });
-  team.data.data.map((team_info) =>
-    team_ids_list.push(team_info)
+  teams.data.data.map((team_info) =>
+    team_info_list.push(team_info)
   );
-  return team_ids_list;
+  return team_info_list;
 }
 
 // async function getTeamsInfo(team_ids_list) {
