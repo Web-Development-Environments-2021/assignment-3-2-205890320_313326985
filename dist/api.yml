@@ -114,6 +114,8 @@ paths:
           description: The match successfully saved as favorite
         "401":
           description: user is not authorized
+        "409":
+          description: match already in favorites
   /teams/teamFullDetails/{teamId}:
     get:
       summary: get full deatils about a team

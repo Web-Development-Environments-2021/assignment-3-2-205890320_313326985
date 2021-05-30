@@ -48,13 +48,33 @@ router.use(async function (req, res, next) {
   try {
     const user_id = req.session.user_id;
     const match_Id_from_body = req.body.match_id;
-    await matches.markMatchAsFavorite(user_id, match_Id_from_body);
+    const num_of_error = await markMatchAsFavorite(user_id, match_Id_from_body);
+    if(num_of_error== 0){
+      throw{status:400,message:"match id invalid"};
+    }
   } catch (error) {
+    throw{status:409,message:"match id already in favorite"};
     next(error);
   }
   res.status(201).send("The match successfully saved to the favorites");
  });
 
+
+// help function to add new favorite match
+async function markMatchAsFavorite(user_id, match_id) {5
+  const match_id_from_table = await DButils.execQuery(
+    `select match_id from dbo.Matches where match_id='${match_id}'`
+  );
+  if (match_id_from_table != null){
+    // insert match to favoritematches table
+    await DButils.execQuery(
+    `insert into dbo.FavoriteMatches values ('${user_id}','${match_id}')`
+    );
+  }
+  else{
+    return 0;
+  }
+}
 
 
 
