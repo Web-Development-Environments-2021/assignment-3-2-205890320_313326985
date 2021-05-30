@@ -199,8 +199,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/MatchPreview'
-        "204":
-          description: "There is no content to send for this request"
         "401":
           description: "You have not authenticated yet, please sign in"
         "404":
@@ -215,13 +213,13 @@ paths:
         in: query
         required: true
         schema:
-          type: int
+          type: integer
         example: 1854
       - name: match_id
         in: query
         required: true
         schema:
-          type: int
+          type: integer
         example: 19246
       responses:
         "201":
@@ -235,17 +233,17 @@ paths:
       tags:
       - UnionAgent
       summary: add events log to past match in system
-      parameters:
-      - name: match_id
-        in: query
-        description: ID of past match
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: integer
-          format: int64
-        example: 16475
+      # parameters:
+      # - name: match_id
+      #   in: query
+      #   description: ID of past match
+      #   required: true
+      #   style: simple
+      #   explode: false
+      #   schema:
+      #     type: integer
+      #     format: int64
+      #   example: 16475
       requestBody:
         content:
           application/json:
@@ -257,8 +255,6 @@ paths:
       responses:
         "201":
           description: successful operation
-        "204":
-          description: There is no content to send for this request
         "400":
           description: it is not a valid past match ID
         "401":
