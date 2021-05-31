@@ -52,35 +52,6 @@ const matches_utils = require("./utils/matches_utils");
 // });
 
 
-
-
-
-// help function to add new favorite match
- async function markMatchAsFavorite(user_id, match_id) {
-  const match_id_from_table = await DButils.execQuery(
-    `select match_id from dbo.Matches where match_id='${match_id}'`
-  );
-  if (match_id_from_table != null){
-    // insert match to favoritematches table
-    await DButils.execQuery(
-    `insert into dbo.FavoriteMatches values ('${user_id}','${match_id}')`
-    );
-  }
-}
-
-exports.markMatchAsFavorite = markMatchAsFavorite;
-
-
-
-
-
-
-
-
-
-
-
-
 module.exports = router;
 
 
