@@ -44,6 +44,9 @@ function extractRelevantPlayerData(players_info) {
 // get from data we have got from http req', data for personal page
 function extractPersonalPagePlayerData(player_info) {
   // return player_info => {
+    if(player_info.team.data.current_season_id != 17328){
+      return 0;
+    }
     const {fullname,image_path,position_id,common_name,nationality,birthdate,birthcountry,height,weight} = player_info;
     const { name } = player_info.team.data;
     return {

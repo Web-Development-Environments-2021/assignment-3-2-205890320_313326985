@@ -29,6 +29,7 @@ router.use(async function (req, res, next) {
   try {
     const user_id = req.session.user_id;
     const match_ids = await matches_utils.getFavoriteMatches(user_id);
+    // returning 0 means error from help function
     if(match_ids.length == 0){
       throw { status: 204, message: "This user does not have any favorite matches" };
     }
