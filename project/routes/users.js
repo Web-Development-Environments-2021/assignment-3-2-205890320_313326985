@@ -52,11 +52,12 @@ router.use(async function (req, res, next) {
     if(num_of_error== 0){
       throw{status:400,message:"match id invalid"};
     }
+    else{
+      res.status(201).send("The match successfully saved to the favorites");
+    }
   } catch (error) {
-    throw{status:409,message:"match id already in favorite"};
     next(error);
   }
-  res.status(201).send("The match successfully saved to the favorites");
  });
 
 
@@ -65,7 +66,7 @@ async function markMatchAsFavorite(user_id, match_id) {5
   const match_id_from_table = await DButils.execQuery(
     `select match_id from dbo.Matches where match_id='${match_id}'`
   );
-  if (match_id_from_table != null){
+  if (match_id_from_table.length > 0){
     // insert match to favoritematches table
     await DButils.execQuery(
     `insert into dbo.FavoriteMatches values ('${user_id}','${match_id}')`
