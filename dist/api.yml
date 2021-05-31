@@ -129,6 +129,7 @@ paths:
           required: true
           schema:
             type: integer
+            example: 53
       responses:
         "200":
           description: data about the team
@@ -151,6 +152,7 @@ paths:
           required: true
           schema:
             type: integer
+            example: 172104
       responses:
         "200":
           description: data about the player
