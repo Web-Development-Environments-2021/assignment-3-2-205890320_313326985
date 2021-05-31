@@ -7,6 +7,6 @@ CREATE TABLE [dbo].[Users](
     [password] [varchar](300) NOT NULL,
     [email] [varchar](50) NOT NULL,
     [image_url] [varchar](3000) NOT NULL,
-    [union_agent] [bit] DEFAULT NULL,
+    [union_agent] [bit] DEFAULT 0,
     PRIMARY KEY(user_id)
 )
