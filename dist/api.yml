@@ -553,6 +553,7 @@ components:
         date_time:
           type: string
           format: date-time
+          example: "2020-08-02 15:30:00"
         local_team_id:
           type: integer
           example: 53
@@ -583,6 +584,14 @@ components:
           items:
             type: object
             $ref: "#/components/schemas/PlayerPreview"
+        team's past matches:
+          type: array
+          items:
+            $ref: '#/components/schemas/MatchPreview'
+        team's future matches:
+          type: array
+          items:
+            $ref: '#/components/schemas/MatchPreview'
     Event:
       type: object
       properties:
@@ -595,6 +604,7 @@ components:
         date_and_time_happend:
           type: string
           format: date-time
+          example: "2020-08-02 15:30:00"
         minute:
           type: integer
           example: 17
