@@ -367,10 +367,10 @@ paths:
             type: string
             default: none
             enum:
-            - asc
-            - desc
+            - player name
+            - team name
             - none
-        example: asc
+        example: player name
       - name: filter
         in: query
         description: how to filter results, can be done by position of player or by team name
