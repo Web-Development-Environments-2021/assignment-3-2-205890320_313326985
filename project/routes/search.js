@@ -102,6 +102,10 @@ router.get("/Players", async (req, res, next) => {
       else if(sort_way == "team name"){
         players_list_filtered_by_season_filterquery_sorted_by_name.sort((a,b) => ((a.team.data.name).localeCompare(b.team.data.name)));
       }
+      // if query is only letters and space, but invalid
+      else{
+        throw{status: 400, message:"wrong sort"}
+      }
     }
     // wrong parameter, send status fail
     else if(sort_way != "none"){
