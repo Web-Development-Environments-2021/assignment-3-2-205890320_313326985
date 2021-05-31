@@ -37,7 +37,7 @@ async function getMatchesInfo(matches_ids_list) {
   matches_ids_list.map((id) =>
     promises.push(
         DButils.execQuery(
-            `select match_id,date_time,local_team_id,visitor_team_id,venue_id,referee_id,home_goals,away_goals from dbo.Matches where match_id='${id}'`
+            `select match_id,date_time,local_team_id,visitor_team_id,venue_id from dbo.Matches where match_id='${id}'`
         )
     )
   );

@@ -17,6 +17,16 @@ async function getPlayersByNameAndTeam(player_name){
   return player_info_list;
 }
 
+async function getPlayerById(player_id){
+  const player = await axios.get(`${api_domain}/players/${player_id}`, {
+    params: {
+      api_token: process.env.api_token,
+      include : 'team'
+    },
+  });
+  return player;
+}
+
 // get from data we have got from http req' the relevant to response
 function extractRelevantPlayerData(players_info) {
   return players_info.map((player_info) => {
@@ -31,6 +41,26 @@ function extractRelevantPlayerData(players_info) {
     };
   });
 }
+
+// get from data we have got from http req', data for personal page
+function extractPersonalPagePlayerData(player_info) {
+  // return player_info => {
+    const {fullname,image_path,position_id,common_name,nationality,birthdate,birthcountry,height,weight} = player_info;
+    const { name } = player_info.team.data;
+    return {
+      name: fullname,
+      image: image_path,
+      position: position_id,
+      team_name: name,
+      common_name: common_name,
+      nationality: nationality,
+      birth_date: birthdate,
+      birth_country: birthcountry,
+      height:height,
+      weight:weight
+    };
+  };
+
 
 
 async function getPlayersByTeam(team_id) {
@@ -89,13 +119,14 @@ async function getPlayersInfo(team_id){
   return extractRelevantPlayerData(players_info);
 }
 
+
+
 exports.getPlayersByNameAndTeam=getPlayersByNameAndTeam;
 exports.extractRelevantPlayerData=extractRelevantPlayerData;
 exports.getPlayersByTeam = getPlayersByTeam;
 exports.getPlayersInfo = getPlayersInfo;
-
-
-
+exports.extractPersonalPagePlayerData = extractPersonalPagePlayerData;
+exports.getPlayerById = getPlayerById;
 
 
 

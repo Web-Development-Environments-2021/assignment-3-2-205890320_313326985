@@ -90,7 +90,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/MatchPreview"
+                  $ref: "#/components/schemas/FutureMatchPreview"
         "401":
           description: user is not authorized
         "204":
@@ -129,6 +129,7 @@ paths:
           required: true
           schema:
             type: integer
+            example: 53
       responses:
         "200":
           description: data about the team
@@ -151,6 +152,7 @@ paths:
           required: true
           schema:
             type: integer
+            example: 172104
       responses:
         "200":
           description: data about the player
@@ -576,6 +578,25 @@ components:
         away_goals:
           type: integer
           example: 3
+    FutureMatchPreview:
+      type: object
+      properties:
+        match_id:
+          type: integer
+          example: 53
+        date_time:
+          type: string
+          format: date-time
+          example: "2020-08-02 15:30:00"
+        local_team_id:
+          type: integer
+          example: 53
+        visitor_team_id:
+          type: integer
+          example: 338
+        venue_id:
+          type: integer
+          example: 8909 
     Team:
       type: object
       properties:
