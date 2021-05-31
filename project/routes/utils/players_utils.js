@@ -54,7 +54,7 @@ function extractPersonalPagePlayerData(player_info) {
       common_name: common_name,
       nationality: nationality,
       birth_date: birthdate,
-      birth_country:birthcountry,
+      birth_country: birthcountry,
       height:height,
       weight:weight
     };
