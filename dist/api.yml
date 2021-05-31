@@ -137,7 +137,29 @@ paths:
               schema:
                 $ref: "#/components/schemas/Team"
         "404":
-          description: teamId is not exists
+          description: teamId does not exist
+  /players/playerFullDetails/{playerId}:
+    get:
+      summary: get full deatils about a player
+      description: useful for player page
+      tags:
+      - Players
+      parameters:
+        - in: path
+          name: playerId
+          description: player's id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: data about the player
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Player"
+        "404":
+          description: playerId does not exist
   /UnionAgent:
     get:
       tags:
@@ -483,6 +505,45 @@ components:
           type: string
           description: player's team name
           example: København
+    Player:
+      type: object
+      properties:
+        name:
+          type: string
+          description: player's name
+          example: Sten Michael Grytebust
+        image:
+          type: string
+          description: player's image
+          format: URL
+          example: https://cdn.sportmonks.com/images/soccer/players/11/84587.png
+        position:
+          type: integer
+          description: player's position in team
+          example: 1
+        team_name:
+          type: string
+          description: player's team name
+          example: København
+        common name:
+          type: string
+          example: J. Forrest
+        nationality:
+          type: string
+          example: Scotland
+        birth date:
+          pattern: ^\d{2}/\d{2}/\d{4}$
+          type: string
+          example: 07/07/1991
+        birth country:
+          type: string
+          example: Scotland
+        height:
+          type: string
+          example: 175 cm
+        weight:
+          type: string
+          example: 75 kg
     MatchPreview:
       type: object
       properties:
