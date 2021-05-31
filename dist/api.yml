@@ -494,6 +494,10 @@ components:
           type: string
           description: player's name
           example: Sten Michael Grytebust
+        id:
+          type: integer
+          description: 172923
+          example: Sten Michael Grytebust
         image:
           type: string
           description: player's image
@@ -596,10 +600,15 @@ components:
     Team:
       type: object
       properties:
-        name:
+        team name:
           type: string
           description: team name
           example: København
+        logo path:
+          type: string
+          format: URL
+          description: logo path
+          example: https://cdn.sportmonks.com/images//soccer/teams/11/939.png
         players:
           type: array
           items:
