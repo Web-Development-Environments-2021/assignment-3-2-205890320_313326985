@@ -51,10 +51,10 @@ function extractPersonalPagePlayerData(player_info) {
       image: image_path,
       position: position_id,
       team_name: name,
-      commonname: common_name,
+      common_name: common_name,
       nationality: nationality,
-      birthdate: birthdate,
-      birthcountry:birthcountry,
+      birth_date: birthdate,
+      birth_country:birthcountry,
       height:height,
       weight:weight
     };
