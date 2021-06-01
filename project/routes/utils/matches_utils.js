@@ -38,7 +38,9 @@ async function getMatchesInfo(matches_ids_list) {
   matches_ids_list.map((id) =>
     promises.push(
         DButils.execQuery(
-            `select match_id,date_time,local_team_id,visitor_team_id,venue_id from dbo.Matches where match_id='${id}'`
+            `select match_id,date_time,local_team_id,visitor_team_id,venue_id 
+            from dbo.Matches 
+            where match_id='${id}'`
         )
     )
   );
@@ -47,7 +49,9 @@ async function getMatchesInfo(matches_ids_list) {
 
 async function getFavoriteMatches(user_id){
     const match_ids = await DButils.execQuery(
-        `select match_id from dbo.FavoriteMatches where user_id='${user_id}'`
+        `select match_id 
+        from dbo.FavoriteMatches
+        where user_id='${user_id}'`
       );
     return match_ids;
 }
