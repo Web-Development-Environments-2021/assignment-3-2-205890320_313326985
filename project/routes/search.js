@@ -16,7 +16,29 @@ router.get("/Teams", async (req, res, next) => {
         team_list_filtered_by_season.push(team_list[i]);
       }
     }
-    const results = await team_utils.extractRelevantTeamData(team_list_filtered_by_season);
+    var team_list_filtered_by_season_sorted_by_name = team_list_filtered_by_season;
+    if(/^[A-Za-z]+$/.test(sort_way)){
+      // sort by team name, ascending
+      if(sort_way == "asc"){
+        team_list_filtered_by_season_sorted_by_name.sort((a,b) => ((a.name).localeCompare(b.name)));
+      }
+      // sort by team name, descending
+      else if(sort_way == "desc"){
+        team_list_filtered_by_season_sorted_by_name.sort((a,b) => ((b.name).localeCompare(a.name)));
+      }
+      // if query is only letters, but invalid
+      else if(sort_way != "none"){
+        throw{status: 400, message:"wrong sort"}
+      }
+    }
+    // wrong parameter, send status fail
+    else{
+      throw{status: 400, message:"wrong sort"}
+    }
+    
+
+
+    const results = await team_utils.extractRelevantTeamData(team_list_filtered_by_season_sorted_by_name);
     res.status(201).send(results);
   }
   catch (error) {
@@ -103,12 +125,12 @@ router.get("/Players", async (req, res, next) => {
         players_list_filtered_by_season_filterquery_sorted_by_name.sort((a,b) => ((a.team.data.name).localeCompare(b.team.data.name)));
       }
       // if query is only letters and space, but invalid
-      else{
+      else if(sort_way != "none"){
         throw{status: 400, message:"wrong sort"}
       }
     }
     // wrong parameter, send status fail
-    else if(sort_way != "none"){
+    else{
       throw{status: 400, message:"wrong sort"}
     }
     
