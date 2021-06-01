@@ -55,14 +55,27 @@ const matches_utils = require("./utils/matches_utils");
 // function to get past matches for current stage matches
 router.get("/pastMatches", async (req, res, next) => {
 try{
-    const matchIDsWithEventLogs = await matches_utils.getPastMatchesWith3orMoreEventLogs();
-    const pastMatches = await matches_utils.getPastMatchesWithInfoByIDs(matchIDsWithEventLogs);
+    // const matchIDsWithEventLogs = await matches_utils.getPastMatchesWith3orMoreEventLogs();
+    // const pastMatches = await matches_utils.getPastMatchesWithInfoByIDs(matchIDsWithEventLogs);
+    const pastMatches = await matches_utils.getPastMatchesWithInfoByIDs();
     res.status(200).send(pastMatches);
 }   
 catch(error){
     next(error);
 }
 });
+
+// function to get future matches for current stage matches
+router.get("/futureMatches", async (req, res, next) => {
+try{
+    const futureMatches = await matches_utils.getFutureMatches();
+    res.status(200).send(futureMatches);
+}   
+catch(error){
+    next(error);
+}
+});
+
 
 module.exports = router;
 

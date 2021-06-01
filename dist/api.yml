@@ -429,7 +429,24 @@ paths:
         "401":
           description: You have not authenticated yet, please sign in
 
-
+  /matches/futureMatches:
+    get:
+      tags:
+      - Matches
+      summary: Search for future matches
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FutureMatchPreview'
+        "204":
+          description: There is no content to send for this request
+        "401":
+          description: You have not authenticated yet, please sign in
 components:
   schemas:
     User:
