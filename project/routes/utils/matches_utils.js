@@ -51,6 +51,21 @@ async function getFavoriteMatches(user_id){
     return match_ids;
 }
 
+async function getPastMatchesIDs(){
+  const pastIDs = await DButils.execQuery(
+    `select match_id from dbo.Matches where date_time < GETDATE()`
+  );
+  return pastIDs;
+}
+
+async function getPastMatchesWith3orMoreEventLogs(){
+  const pastMatches = await DButils.execQuery(
+    `select count(event_id) from dbo.Events group by match_id'`
+  );
+  
+}
+
+
 exports.getAllMatchesID = getAllMatchesID;
 exports.getMatchesInfo = getMatchesInfo;
 exports.getFavoriteMatches = getFavoriteMatches;

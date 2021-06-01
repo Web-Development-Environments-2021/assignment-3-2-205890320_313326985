@@ -52,6 +52,17 @@ const matches_utils = require("./utils/matches_utils");
 // });
 
 
+// function to get past matches for current stage matches
+router.get("/pastMatches", async (req, res, next) => {
+try{
+    
+}
+catch(error){
+    next(error);
+}
+//send result status 200
+});
+
 module.exports = router;
 
 

@@ -627,9 +627,6 @@ components:
     Event:
       type: object
       properties:
-        event_id:
-          type: integer
-          example: 13
         match_id:
           type: integer
           example: 18439
