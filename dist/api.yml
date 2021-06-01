@@ -627,9 +627,6 @@ components:
     Event:
       type: object
       properties:
-        match_id:
-          type: integer
-          example: 18439
         date_and_time_happend:
           type: string
           format: date-time
