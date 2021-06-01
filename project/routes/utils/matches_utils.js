@@ -52,23 +52,25 @@ async function getFavoriteMatches(user_id){
     return match_ids;
 }
 
-async function getPastMatchesIDs(){
-  const pastIDs = await DButils.execQuery(
-    `select match_id from dbo.Matches where date_time < GETDATE()`
+// get from list of match ids matches with their info
+async function getPastMatchesWithInfoByIDs(matchesWithEventLogs){
+  const pastmatches = await DButils.execQuery(
+    `select * from dbo.Matches where date_time < GETDATE() and match_id in(select match_id from dbo.Events group by match_id having count(event_id)>2 )`
   );
-  return pastIDs;
+  return pastmatches;
 }
 
+// returns list of match_ids, that has 3 or more event logs in them
 async function getPastMatchesWith3orMoreEventLogs(){
-  const pastMatches = await DButils.execQuery(
-    `select count(event_id) from dbo.Events group by match_id where count(event_id)>2'`
+  const matchesWithEventLogs = await DButils.execQuery(
+    `select match_id from dbo.Events group by match_id having count(event_id)>2 `
   );
-  return pastMatches;
+  return matchesWithEventLogs;
 }
 
 
 exports.getAllMatchesID = getAllMatchesID;
 exports.getMatchesInfo = getMatchesInfo;
 exports.getFavoriteMatches = getFavoriteMatches;
-exports.getPastMatchesIDs = getPastMatchesIDs;
+exports.getPastMatchesWithInfoByIDs = getPastMatchesWithInfoByIDs;
 exports.getPastMatchesWith3orMoreEventLogs = getPastMatchesWith3orMoreEventLogs;
