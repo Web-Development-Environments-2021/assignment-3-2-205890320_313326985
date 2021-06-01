@@ -55,7 +55,7 @@ const matches_utils = require("./utils/matches_utils");
 // function to get past matches for current stage matches
 router.get("/pastMatches", async (req, res, next) => {
 try{
-    
+    const a = matches_utils.getPastMatchesWith3orMoreEventLogs();
 }
 catch(error){
     next(error);

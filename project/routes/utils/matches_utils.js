@@ -1,4 +1,5 @@
 const axios = require("axios");
+const e = require("express");
 const api_domain = "https://soccer.sportmonks.com/api/v2.0";
 const DButils = require("./DButils");
 const SEASON_ID = 17328;
@@ -60,12 +61,14 @@ async function getPastMatchesIDs(){
 
 async function getPastMatchesWith3orMoreEventLogs(){
   const pastMatches = await DButils.execQuery(
-    `select count(event_id) from dbo.Events group by match_id'`
+    `select count(event_id) from dbo.Events group by match_id where count(event_id)>2'`
   );
-  
+  return pastMatches;
 }
 
 
 exports.getAllMatchesID = getAllMatchesID;
 exports.getMatchesInfo = getMatchesInfo;
 exports.getFavoriteMatches = getFavoriteMatches;
+exports.getPastMatchesIDs = getPastMatchesIDs;
+exports.getPastMatchesWith3orMoreEventLogs = getPastMatchesWith3orMoreEventLogs;

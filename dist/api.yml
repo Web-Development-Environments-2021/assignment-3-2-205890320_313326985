@@ -410,7 +410,26 @@ paths:
         "404":
           description: The server can not find the requested resource
 
-  
+  /matches/pastMatches:
+    get:
+      tags:
+      - Matches
+      summary: Search for past matches with 3 or more eventlogs
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MatchPreview'
+        "204":
+          description: There is no content to send for this request
+        "401":
+          description: You have not authenticated yet, please sign in
+
+
 components:
   schemas:
     User:
