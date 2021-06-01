@@ -72,9 +72,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/League"
+                $ref: "#/components/schemas/League"
         "400":
           description: wrong input parameters
   /users/favoriteMatches:
@@ -487,6 +485,10 @@ components:
           type: string
           description: current stage name
           example: Championship Round
+        next_match_planned:
+          type: object
+          description: the next match scheduled for the league
+          $ref: '#/components/schemas/FutureMatchPreview'
     PlayerPreview:
       type: object
       properties:
@@ -621,7 +623,7 @@ components:
         team's future matches:
           type: array
           items:
-            $ref: '#/components/schemas/MatchPreview'
+            $ref: '#/components/schemas/FutureMatchPreview'
     Event:
       type: object
       properties:
