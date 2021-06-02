@@ -24,6 +24,7 @@ router.use(async function (req, res, next) {
 
 /**
  * This path returns the favorites matches that were saved by the logged-in user
+ * If a match is not a future match, it will be removed
  */
  router.get("/favoriteMatches", async (req, res, next) => {
   try {
