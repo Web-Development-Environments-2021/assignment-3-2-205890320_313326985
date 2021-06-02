@@ -15,9 +15,6 @@ router.get("/getDetails", async (req, res, next) => {
 
     league_details.next_match_planned = next_match[0];
 
-    //------------------------right------------------------------//
-    // logged in user   
-
 
     res.send(league_details);
   } catch (error) {
