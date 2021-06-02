@@ -8,6 +8,13 @@ const player_utils = require("./utils/players_utils");
 router.get("/Teams", async (req, res, next) => {
   try{
     const team_name_to_search = req.query.query;
+    if (team_name_to_search == undefined){
+      throw{status: 400, message: "invalid parameter name"};
+    }
+    // if query is empty, or does not contain only letters, with no space
+    if(team_name_to_search == "" || !(/^[A-Za-z]+$/.test(team_name_to_search))){
+      throw{status: 400, message: "invalid query search"};
+    }
     const sort_way = req.query.sort;
     const team_list = await team_utils.getTeamsByName(team_name_to_search);
     const team_list_filtered_by_season = [];
