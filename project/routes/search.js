@@ -8,8 +8,9 @@ const player_utils = require("./utils/players_utils");
 router.get("/Teams", async (req, res, next) => {
   try{
     // sanity checks
-    if (req.query.query == undefined || req.query.sort == undefined){
-      throw{status: 400, message: "invalid parameter name"};
+    const amountOfParams = Object.keys(req.query).length;
+    if (req.query.query == undefined || req.query.sort == undefined || amountOfParams > 2){
+      throw{status: 400, message: "invalid parameter names"};
     }
     const team_name_to_search = req.query.query;
     const sort_way = req.query.sort;
@@ -25,6 +26,9 @@ router.get("/Teams", async (req, res, next) => {
         team_list_filtered_by_season.push(team_list[i]);
       }
     }
+    if(team_list_filtered_by_season.length == 0){
+      throw{status: 204, message: "No content"};
+    }
     var team_list_filtered_by_season_sorted_by_name = team_list_filtered_by_season;
     if(/^[A-Za-z]+$/.test(sort_way)){
       // sort by team name, ascending
@@ -37,7 +41,7 @@ router.get("/Teams", async (req, res, next) => {
       }
       // if query is only letters, but invalid
       else if(sort_way != "none"){
-        throw{status: 400, message:"wrong way to sort"}
+        throw{status: 400, message:"wrong way to sort"};
       }
     }
     // wrong parameter, send status fail
@@ -46,7 +50,7 @@ router.get("/Teams", async (req, res, next) => {
     }
     
     const results = await team_utils.extractRelevantTeamData(team_list_filtered_by_season_sorted_by_name);
-    res.status(201).send(results);
+    res.status(200).send(results);
   }
   catch (error) {
   next(error);
@@ -59,8 +63,9 @@ router.get("/Teams", async (req, res, next) => {
 router.get("/Players", async (req, res, next) => {
   try{
      // sanity checks
-     if (req.query.query == undefined || req.query.sort == undefined || req.query.filter == undefined){
-      throw{status: 400, message: "invalid parameter name"};
+     const amountOfParams = Object.keys(req.query).length;
+     if (req.query.query == undefined || req.query.sort == undefined || req.query.filter == undefined || amountOfParams > 4){
+      throw{status: 400, message: "invalid parameter names"};
     }
     const player_name_to_search = req.query.query;
     const sort_way = req.query.sort;

@@ -3,9 +3,6 @@ var router = express.Router();
 const DButils = require("../routes/utils/DButils");
 const bcrypt = require("bcryptjs");
 
-//test require
-const login_test = require("../tests/auth/login.test");
-
 router.post("/Register", async (req, res, next) => {
   try {
     // parameters exists
@@ -53,6 +50,30 @@ router.post("/Login", async (req, res, next) => {
 
     // Set cookie
     req.session.user_id = user.user_id;
+
+    // return cookie
+    res.status(200).send("login succeeded");
+  } catch (error) {
+    next(error);
+  }
+});
+
+
+router.post("/TestLogin", async (req, res, next) => {
+  try {
+    const user = {username: "liadna", password: "$2a$13$mKa.NtWdpT8YKyenldc/LuzCZWlQ74i0bkftAIdC48hmI/WBQDhTu"};
+    // user.password = "147147";
+    // $2a$13$mKa.NtWdpT8YKyenldc/LuzCZWlQ74i0bkftAIdC48hmI/WBQDhTu
+    // user = user[0];
+    // console.log(user);
+    const y=req.body;
+    const y1=req;
+    const y2= req.params;
+    const y3 = req.query;
+    // check that username exists & the password is correct
+    if (!user || !bcrypt.compareSync("147147", user.password)) {
+      throw { status: 401, message: "Username or Password incorrect" };
+    }
 
     // return cookie
     res.status(200).send("login succeeded");

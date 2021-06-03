@@ -2,7 +2,7 @@ var express = require("express");
 var router = express.Router();
 const DButils = require("./utils/DButils");
 const matches_utils = require("./utils/matches_utils"); 
-const matches = require("./matches");
+const users_utils = require("./utils/users_utils"); 
 
 /**
  * Authenticate all incoming requests by middleware
@@ -36,7 +36,7 @@ router.use(async function (req, res, next) {
     }
     let match_ids_array = [];
     match_ids.map((element) => match_ids_array.push(element.match_id)); //extracting the match's ids into array
-    const results = await matches_utils.getMatchesInfo(match_ids_array);
+    const results = await users_utils.getMatchesInfo(match_ids_array);
     res.status(200).send(results);
   } catch (error) {
     next(error);
@@ -50,7 +50,7 @@ router.use(async function (req, res, next) {
   try {
     const user_id = req.session.user_id;
     const match_Id_from_body = req.body.match_id;
-    const num_of_error = await markMatchAsFavorite(user_id, match_Id_from_body);
+    const num_of_error = await users_utils.markMatchAsFavorite(user_id, match_Id_from_body);
     if(num_of_error== 0){
       throw{status:400,message:"match id invalid"};
     }
@@ -61,23 +61,6 @@ router.use(async function (req, res, next) {
     next(error);
   }
  });
-
-
-// help function to add new favorite match
-async function markMatchAsFavorite(user_id, match_id) {5
-  const match_id_from_table = await DButils.execQuery(
-    `select match_id from dbo.Matches where match_id='${match_id}'`
-  );
-  if (match_id_from_table.length > 0){
-    // insert match to favoritematches table
-    await DButils.execQuery(
-    `insert into dbo.FavoriteMatches values ('${user_id}','${match_id}')`
-    );
-  }
-  else{
-    return 0;
-  }
-}
 
 
 

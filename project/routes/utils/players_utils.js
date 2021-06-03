@@ -27,87 +27,6 @@ async function getPlayerById(player_id){
   return player;
 }
 
-// get from data we have got from http req' the relevant to response
-function extractRelevantPlayerData(players_info) {
-  return players_info.map((player_info) => {
-    const { fullname, player_id, image_path, position_id } = player_info;
-    const { name } = player_info.team.data;
-    return {
-      name: fullname,
-      id: player_id,
-      image: image_path,
-      position: position_id,
-      team_name: name,
-    };
-  });
-}
-
-// get from data we have got from http req', data for personal page
-function extractPersonalPagePlayerData(player_info) {
-  // return player_info => {
-    if(player_info.team.data.current_season_id != 17328){
-      return 0;
-    }
-    const {fullname,image_path,position_id,common_name,nationality,birthdate,birthcountry,height,weight} = player_info;
-    const { name } = player_info.team.data;
-    return {
-      name: fullname,
-      image: image_path,
-      position: position_id,
-      team_name: name,
-      common_name: common_name,
-      nationality: nationality,
-      birth_date: birthdate,
-      birth_country: birthcountry,
-      height:height,
-      weight:weight
-    };
-  };
-
-
-
-async function getPlayersByTeam(team_id) {
-  // Naor's 
-  //let player_ids_list = await getPlayerIdsByTeam(team_id);
-  //let players_info = await getPlayersInfo(player_ids_list);
-
-  let players_info = await getPlayersInfo(team_id);
-
-  return players_info;
-}
-
-// we did the same function with less api requests
-// async function getPlayerIdsByTeam(team_id) {
-//   let player_ids_list = [];
-//   const team = await axios.get(`${api_domain}/teams/${team_id}`, {
-//     params: {
-//       include: "squad",
-//       api_token: process.env.api_token,
-//     },
-//   });
-//   team.data.data.squad.data.map((player) =>
-//     player_ids_list.push(player.player_id)
-//   );
-//   return player_ids_list;
-// }
-
-// we did the same function with less api requests
-// async function getPlayersInfo(players_ids_list) {
-//   let promises = [];
-//   players_ids_list.map((id) =>
-//     promises.push(
-//       axios.get(`${api_domain}/players/${id}`, {
-//         params: {
-//           api_token: process.env.api_token,
-//           include: "team",
-//         },
-//       })
-//     )
-//   );
-//   let players_info = await Promise.all(promises);
-//   return extractRelevantPlayerData(players_info);
-// }
-
 async function getPlayersInfo(team_id){
   let players_info = [];
   const team = await axios.get(`${api_domain}/teams/${team_id}`, {
@@ -122,13 +41,8 @@ async function getPlayersInfo(team_id){
   return extractRelevantPlayerData(players_info);
 }
 
-
-
 exports.getPlayersByNameAndTeam=getPlayersByNameAndTeam;
-exports.extractRelevantPlayerData=extractRelevantPlayerData;
-exports.getPlayersByTeam = getPlayersByTeam;
 exports.getPlayersInfo = getPlayersInfo;
-exports.extractPersonalPagePlayerData = extractPersonalPagePlayerData;
 exports.getPlayerById = getPlayerById;
 
 
