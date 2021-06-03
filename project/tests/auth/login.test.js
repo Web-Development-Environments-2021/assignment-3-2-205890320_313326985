@@ -1,28 +1,24 @@
-const request = require('supertest')
-const app = require('../auth')
+const login = require("../../routes/auth");
+var express = require("express");
+const request = require("supertest");
+var app = express();
 
-describe("Unsuccessful user login, user invalid", ()=> {
-  it("GET /Login - success", async () => {
-    const res = await request(app)
-      .post('/Login')
+
+
+describe("Test the root path", () => {
+  test("It should response the GET method", () => {
+    return request(app.use(login))
+      .post("/TestLogin")
       .send({
-        username: "naorb",
-        password: "naor@55",
+        username: "liadna",
+        password: "147147"
       })
-    expect(res.statusCode).toEqual(401)
-    expect(res.body).toHaveProperty('post')
-  })
-})
+      .then(res => {
+        expect(res.statusCode).toBe(200);
+      });
+  });
+});
 
-// test('Unsuccessful user login, user invalid', async () => {
-//     const data = await auth.post("/Login", async (req, res, next)
-//     var req = new Object();
-//     req.body = new Object();
-//     req.body.username = "naorb";
-//     var res = new Object();
-//     res.status = 401;
-//     res.send = "Username or Password incorrect";
-//     var next = new Object();
-//     expect(auth.post("/Login", async (req, res, next))
-//     ).toBe(res);
-//   });
+  test('should test that true === true', () => {
+    expect(true).toBe(true)
+  })

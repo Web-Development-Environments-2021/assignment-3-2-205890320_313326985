@@ -31,7 +31,9 @@ async function getTeamsBySeason() {
   return teams_list;
 }
 
+//// NEED TO CHECK WHET IS CORRECT
 async function getTeamsInfo(team_ids_list) {
+// async function getTeamsInfo() {
   let promises = [];
   players_ids_list.map((id) =>
     promises.push(
@@ -58,21 +60,7 @@ async function getTeamInfoById(id) {
 }
 
 
-function extractRelevantTeamData(teams_info) {
-  return teams_info.map((team) => {
-    const { name, logo_path} = team;
-    return {
-      "team name": name,
-      "logo path": logo_path,
-    };
-  });
-}
-
-
-
-
 exports.getTeamsByName=getTeamsByName;
-exports.extractRelevantTeamData=extractRelevantTeamData;
 exports.getTeamsInfo=getTeamsInfo;
 exports.getTeamInfoById=getTeamInfoById;
 exports.getTeamsBySeason = getTeamsBySeason;

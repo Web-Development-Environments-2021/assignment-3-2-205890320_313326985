@@ -4,7 +4,7 @@ const api_domain = "https://soccer.sportmonks.com/api/v2.0";
 const DButils = require("./DButils");
 //const SEASON_ID = 17328;
 
-
+//----------------------------------------------//
 // TODO : check why dont work
 // async function getAllMatchesID(){
 //   let matches_ids_list = [];
@@ -20,18 +20,6 @@ const DButils = require("./DButils");
 //   return matches_ids_list
 // }
 
-function extractRelevantPlayerData(players_info) {
-  return players_info.map((player_info) => {
-    const { fullname, image_path, position_id } = player_info.data.data;
-    const { name } = player_info.data.data.team.data;
-    return {
-      name: fullname,
-      image: image_path,
-      position: position_id,
-      team_name: name,
-    };
-  });
-}
 
 async function getMatchesInfo(matches_ids_list) {
   let promises = [];
@@ -46,6 +34,7 @@ async function getMatchesInfo(matches_ids_list) {
   );
   return await Promise.all(promises);
 }
+//----------------------------------------------//
 
 async function removeOldMatchesFromFavorites(){
   await DButils.execQuery(
@@ -60,7 +49,6 @@ async function removeOldMatchesFromFavorites(){
   );
 }
 
-
 async function getFavoriteMatches(user_id){
     removeOldMatchesFromFavorites();
     const match_ids = await DButils.execQuery(
@@ -72,7 +60,7 @@ async function getFavoriteMatches(user_id){
 }
 
 // get from list of match ids matches with their info, to stage matches page
-async function getPastMatchesWithInfoByIDs(){
+async function getPastMatchesWithInfoByIDsAndEvents(){
   const pastmatches = await DButils.execQuery(
     `select * 
     from dbo.Matches 
@@ -87,17 +75,6 @@ async function getPastMatchesWithInfoByIDs(){
   return pastmatches;
 }
 
-// currently not in use
-// returns list of match_ids, that are past matches
-async function getPastMatchesIDs(){
-  const match_ids = await DButils.execQuery(
-    `select match_id
-    from dbo.Matches
-    where date_time < GETDATE()`
-  );
-  return match_ids;
-}
-
 async function getFutureMatches(){
   const futureMatches = await DButils.execQuery(
     `select match_id,date_time,local_team_id,visitor_team_id,venue_id 
@@ -107,9 +84,13 @@ async function getFutureMatches(){
   return futureMatches;
 }
 
-
+//----------------------------------------------//
 // exports.getAllMatchesID = getAllMatchesID;
 exports.getMatchesInfo = getMatchesInfo;
+//----------------------------------------------//
+
+
 exports.getFavoriteMatches = getFavoriteMatches;
-exports.getPastMatchesWithInfoByIDs = getPastMatchesWithInfoByIDs;
+exports.getPastMatchesWithInfoByIDsAndEvents = getPastMatchesWithInfoByIDsAndEvents;
 exports.getFutureMatches=getFutureMatches;
+
