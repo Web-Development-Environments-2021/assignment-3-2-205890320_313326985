@@ -44,3 +44,8 @@ async function getPlayersByTeam(team_id) {
 
   return players_info;
 }
+
+
+exports.extractRelevantPlayerData=extractRelevantPlayerData;
+exports.extractPersonalPagePlayerData=extractPersonalPagePlayerData;
+exports.getPlayersByTeam=getPlayersByTeam;

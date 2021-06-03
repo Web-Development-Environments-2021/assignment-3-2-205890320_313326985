@@ -1,8 +1,9 @@
 var express = require("express");
 var router = express.Router();
-const DButils = require("./utils/DButils");
 const team_utils = require("./utils/teams_utils");
 const player_utils = require("./utils/players_utils");
+const player_domain = require("../routes/domain/players_domain");
+const team_domain = require("../routes/domain/teams_domain");
 
 // request that will return all of the relevant teams for our season with partial/full match to name
 router.get("/Teams", async (req, res, next) => {
@@ -27,7 +28,7 @@ router.get("/Teams", async (req, res, next) => {
       }
     }
     if(team_list_filtered_by_season.length == 0){
-      throw{status: 204, message: "No content"};
+      throw{status: 204, message: "There is no content to send for this request"};
     }
     var team_list_filtered_by_season_sorted_by_name = team_list_filtered_by_season;
     if(/^[A-Za-z]+$/.test(sort_way)){
@@ -49,7 +50,7 @@ router.get("/Teams", async (req, res, next) => {
       throw{status: 400, message: "invalid sort search"};
     }
     
-    const results = await team_utils.extractRelevantTeamData(team_list_filtered_by_season_sorted_by_name);
+    const results = await team_domain.extractRelevantTeamData(team_list_filtered_by_season_sorted_by_name);
     res.status(200).send(results);
   }
   catch (error) {
@@ -95,6 +96,9 @@ router.get("/Players", async (req, res, next) => {
           players_list_filtered_by_season.push(players_list[i]);
         }
     }
+    if(players_list_filtered_by_season.length == 0){
+      throw{status: 204, message: "There is no content to send for this request"};
+    }
     // now filter
     var players_list_filtered_by_season_filterquery = [];
     // filter by team name
@@ -129,6 +133,9 @@ router.get("/Players", async (req, res, next) => {
     else{
       throw{status: 400, message:"wrong way to filter"}
     }
+    if(players_list_filtered_by_season_filterquery.length == 0){
+      throw{status: 204, message: "There is no content to send for this request"};
+    }
     // now sort
     var players_list_filtered_by_season_filterquery_sorted_by_name = players_list_filtered_by_season_filterquery;
     // check if sort way is only letters, and space
@@ -152,7 +159,7 @@ router.get("/Players", async (req, res, next) => {
     }
     
     
-    const results = await player_utils.extractRelevantPlayerData(players_list_filtered_by_season_filterquery_sorted_by_name);
+    const results = await player_domain.extractRelevantPlayerData(players_list_filtered_by_season_filterquery_sorted_by_name);
     
 
     res.status(201).send(results);

@@ -7,4 +7,5 @@ function extractRelevantTeamData(teams_info) {
       };
     });
 }
-  
+
+exports.extractRelevantTeamData = extractRelevantTeamData;
