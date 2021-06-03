@@ -7,17 +7,19 @@ const player_utils = require("./utils/players_utils");
 // request that will return all of the relevant teams for our season with partial/full match to name
 router.get("/Teams", async (req, res, next) => {
   try{
-    const team_name_to_search = req.query.query;
-    if (team_name_to_search == undefined){
+    // sanity checks
+    if (req.query.query == undefined || req.query.sort == undefined){
       throw{status: 400, message: "invalid parameter name"};
     }
+    const team_name_to_search = req.query.query;
+    const sort_way = req.query.sort;
     // if query is empty, or does not contain only letters, with no space
-    if(team_name_to_search == "" || !(/^[A-Za-z]+$/.test(team_name_to_search))){
+    if(!(/^[A-Za-z]+$/.test(team_name_to_search))){
       throw{status: 400, message: "invalid query search"};
     }
-    const sort_way = req.query.sort;
     const team_list = await team_utils.getTeamsByName(team_name_to_search);
     const team_list_filtered_by_season = [];
+    // push all teams to arr by specific season
     for(var i=0; i<team_list.length; i++){
       if (team_list[i].current_season_id == 17328){
         team_list_filtered_by_season.push(team_list[i]);
@@ -35,16 +37,14 @@ router.get("/Teams", async (req, res, next) => {
       }
       // if query is only letters, but invalid
       else if(sort_way != "none"){
-        throw{status: 400, message:"wrong sort"}
+        throw{status: 400, message:"wrong way to sort"}
       }
     }
     // wrong parameter, send status fail
     else{
-      throw{status: 400, message:"wrong sort"}
+      throw{status: 400, message: "invalid sort search"};
     }
     
-
-
     const results = await team_utils.extractRelevantTeamData(team_list_filtered_by_season_sorted_by_name);
     res.status(201).send(results);
   }
@@ -58,10 +58,15 @@ router.get("/Teams", async (req, res, next) => {
 // request that will return all of the relevant players for our season with partial/full match to name
 router.get("/Players", async (req, res, next) => {
   try{
+     // sanity checks
+     if (req.query.query == undefined || req.query.sort == undefined || req.query.filter == undefined){
+      throw{status: 400, message: "invalid parameter name"};
+    }
     const player_name_to_search = req.query.query;
     const sort_way = req.query.sort;
     const filter_way = req.query.filter;
     const query_to_filter_players = req.query["filter query"];
+
     const players_list = await player_utils.getPlayersByNameAndTeam(player_name_to_search);
     const players_list_filtered_by_season = [];
       // add to array only players that are in teams that are playing in SuperLiga
@@ -117,7 +122,7 @@ router.get("/Players", async (req, res, next) => {
     }
     // wrong parameter, send status fail
     else{
-      throw{status: 400, message:"wrong filter"}
+      throw{status: 400, message:"wrong way to filter"}
     }
     // now sort
     var players_list_filtered_by_season_filterquery_sorted_by_name = players_list_filtered_by_season_filterquery;
@@ -133,12 +138,12 @@ router.get("/Players", async (req, res, next) => {
       }
       // if query is only letters and space, but invalid
       else if(sort_way != "none"){
-        throw{status: 400, message:"wrong sort"}
+        throw{status: 400, message:"invalid sort search"}
       }
     }
     // wrong parameter, send status fail
     else{
-      throw{status: 400, message:"wrong sort"}
+      throw{status: 400, message:"wrong way to sort"}
     }
     
     
@@ -152,8 +157,6 @@ router.get("/Players", async (req, res, next) => {
   }
   
 });
-
-
 
 
 module.exports = router;

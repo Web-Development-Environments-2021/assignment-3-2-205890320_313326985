@@ -3,6 +3,9 @@ var router = express.Router();
 const DButils = require("../routes/utils/DButils");
 const bcrypt = require("bcryptjs");
 
+//test require
+const login_test = require("../tests/auth/login.test");
+
 router.post("/Register", async (req, res, next) => {
   try {
     // parameters exists
