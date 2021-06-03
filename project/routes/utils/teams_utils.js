@@ -1,5 +1,6 @@
 const axios = require("axios");
 const api_domain = "https://soccer.sportmonks.com/api/v2.0";
+const league_utils = require("./league_utils");
 const TEAM_ID = "85";
 
 async function getTeamsByName(team_name) {
@@ -14,6 +15,20 @@ async function getTeamsByName(team_name) {
     team_info_list.push(team_info)
   );
   return team_info_list;
+}
+
+async function getTeamsBySeason() {
+  let teams_list = [];
+  const season_id = await league_utils.getCurrentSeasonID();
+  const teams = await axios.get(`${api_domain}/teams/season/${season_id}`, {
+    params: {
+      api_token: process.env.api_token,
+    },
+  });
+  teams.data.data.map((team_info) =>
+    teams_list.push({"id":team_info.id, "name":team_info.name})
+  );
+  return teams_list;
 }
 
 async function getTeamsInfo(team_ids_list) {
@@ -55,7 +70,9 @@ function extractRelevantTeamData(teams_info) {
 
 
 
+
 exports.getTeamsByName=getTeamsByName;
 exports.extractRelevantTeamData=extractRelevantTeamData;
 exports.getTeamsInfo=getTeamsInfo;
 exports.getTeamInfoById=getTeamInfoById;
+exports.getTeamsBySeason = getTeamsBySeason;

@@ -26,4 +26,18 @@ async function getLeagueDetails() {
     // next game details should come from DB
   };
 }
+
+
+async function getCurrentSeasonID() {
+  const league = await axios.get(`https://soccer.sportmonks.com/api/v2.0/leagues/${LEAGUE_ID}`, 
+    {
+      params: {
+        api_token: process.env.api_token,
+      },
+    }
+  );
+  return league.data.data.current_season_id;
+}
+
 exports.getLeagueDetails = getLeagueDetails;
+exports.getCurrentSeasonID = getCurrentSeasonID;
