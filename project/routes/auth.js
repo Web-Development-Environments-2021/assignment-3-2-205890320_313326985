@@ -62,10 +62,6 @@ router.post("/Login", async (req, res, next) => {
 router.post("/TestLogin", async (req, res, next) => {
   try {
     const user = {username: "liadna", password: "$2a$13$mKa.NtWdpT8YKyenldc/LuzCZWlQ74i0bkftAIdC48hmI/WBQDhTu"};
-    // user.password = "147147";
-    // $2a$13$mKa.NtWdpT8YKyenldc/LuzCZWlQ74i0bkftAIdC48hmI/WBQDhTu
-    // user = user[0];
-    // console.log(user);
     const y=req.body;
     const y1=req;
     const y2= req.params;

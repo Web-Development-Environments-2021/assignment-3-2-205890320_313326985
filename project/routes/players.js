@@ -7,20 +7,20 @@ const player_domain = require("../routes/domain/players_domain");
 /**
  * Authenticate all incoming requests by middleware
  */
- router.use(async function (req, res, next) {
-  if (req.session && req.session.user_id) {
-    DButils.execQuery("SELECT user_id FROM dbo.Users")
-      .then((users) => {
-        if (users.find((x) => x.user_id === req.session.user_id)) {
-          req.user_id = req.session.user_id;
-          next();
-        }
-      })
-      .catch((err) => next(err));
-  } else {
-    res.sendStatus(401);
-  }
-});
+//  router.use(async function (req, res, next) {
+//   if (req.session && req.session.user_id) {
+//     DButils.execQuery("SELECT user_id FROM dbo.Users")
+//       .then((users) => {
+//         if (users.find((x) => x.user_id === req.session.user_id)) {
+//           req.user_id = req.session.user_id;
+//           next();
+//         }
+//       })
+//       .catch((err) => next(err));
+//   } else {
+//     res.sendStatus(401);
+//   }
+// });
 
 
 
@@ -28,6 +28,10 @@ const player_domain = require("../routes/domain/players_domain");
 router.get("/playerFullDetails/:playerId", async (req, res, next) => {
 try{
   const player_id = req.params.playerId;
+  // sanity check
+  if(!(/^[0-9]+$/.test(player_id))){
+    throw{status:401, message: "This is not a valid player id!"}
+  }
   const player_info = await player_utils.getPlayerById(player_id);
   const results = await player_domain.extractPersonalPagePlayerData(player_info.data.data);
   // returning 0 means error from help function

@@ -13,12 +13,15 @@ router.get("/Teams", async (req, res, next) => {
     if (req.query.query == undefined || req.query.sort == undefined || amountOfParams > 2){
       throw{status: 400, message: "invalid parameter names"};
     }
+
     const team_name_to_search = req.query.query;
     const sort_way = req.query.sort;
     // if query is empty, or does not contain only letters, with no space
     if(!(/^[A-Za-z]+$/.test(team_name_to_search))){
       throw{status: 400, message: "invalid query search"};
     }
+
+
     const team_list = await team_utils.getTeamsByName(team_name_to_search);
     const team_list_filtered_by_season = [];
     // push all teams to arr by specific season
@@ -30,6 +33,9 @@ router.get("/Teams", async (req, res, next) => {
     if(team_list_filtered_by_season.length == 0){
       throw{status: 204, message: "There is no content to send for this request"};
     }
+    /**
+     * Sort
+     */
     var team_list_filtered_by_season_sorted_by_name = team_list_filtered_by_season;
     if(/^[A-Za-z]+$/.test(sort_way)){
       // sort by team name, ascending
@@ -68,10 +74,15 @@ router.get("/Players", async (req, res, next) => {
      if (req.query.query == undefined || req.query.sort == undefined || req.query.filter == undefined || amountOfParams > 4){
       throw{status: 400, message: "invalid parameter names"};
     }
+
     const player_name_to_search = req.query.query;
     const sort_way = req.query.sort;
     const filter_way = req.query.filter;
     const query_to_filter_players = req.query["filter query"];
+
+    if(!(/^[A-Za-z]+$/.test(player_name_to_search))){
+      throw{status: 400, message: "invalid query search"};
+    }
 
     const players_list = await player_utils.getPlayersByNameAndTeam(player_name_to_search);
     const players_list_filtered_by_season = [];
@@ -96,13 +107,20 @@ router.get("/Players", async (req, res, next) => {
           players_list_filtered_by_season.push(players_list[i]);
         }
     }
+
     if(players_list_filtered_by_season.length == 0){
       throw{status: 204, message: "There is no content to send for this request"};
     }
-    // now filter
+
+    /**
+     * Filter
+     */
     var players_list_filtered_by_season_filterquery = [];
     // filter by team name
     if(filter_way == "team name"){
+      if(query_to_filter_players == undefined){
+        throw{status: 400, message: "missing parameters"};
+      }
       // check if filter query is only letters, no space
       if(/^[A-Za-z]+$/.test(query_to_filter_players)){
         for(var i=0; i<players_list_filtered_by_season.length; i++){
@@ -115,6 +133,9 @@ router.get("/Players", async (req, res, next) => {
     }
     // filter by position id
     else if(filter_way == "player's position"){
+      if(query_to_filter_players == undefined){
+        throw{status: 400, message: "missing parameters"};
+      }
       // check if filter query is only numbers, no space
       if(/^[0-9]+$/.test(query_to_filter_players)){
         for(var i=0; i<players_list_filtered_by_season.length; i++){
@@ -136,7 +157,9 @@ router.get("/Players", async (req, res, next) => {
     if(players_list_filtered_by_season_filterquery.length == 0){
       throw{status: 204, message: "There is no content to send for this request"};
     }
-    // now sort
+    /**
+     * Sort
+     */
     var players_list_filtered_by_season_filterquery_sorted_by_name = players_list_filtered_by_season_filterquery;
     // check if sort way is only letters, and space
     if(/^[a-zA-Z\s]*$/.test(sort_way)){
@@ -162,7 +185,7 @@ router.get("/Players", async (req, res, next) => {
     const results = await player_domain.extractRelevantPlayerData(players_list_filtered_by_season_filterquery_sorted_by_name);
     
 
-    res.status(201).send(results);
+    res.status(200).send(results);
   }
     catch (error) {
     next(error);
