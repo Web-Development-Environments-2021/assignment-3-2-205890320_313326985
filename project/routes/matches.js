@@ -27,9 +27,7 @@ router.use(async function (req, res, next) {
 // function to get past matches for current stage matches
 router.get("/pastMatches", async (req, res, next) => {
 try{
-    // const matchIDsWithEventLogs = await matches_utils.getPastMatchesWith3orMoreEventLogs();
-    // const pastMatches = await matches_utils.getPastMatchesWithInfoByIDs(matchIDsWithEventLogs);
-    const pastMatches = await matches_utils.getPastMatchesWithInfoByIDs();
+    const pastMatches = await matches_utils.getPastMatchesWithInfoByIDsAndEvents();
     res.status(200).send(pastMatches);
 }   
 catch(error){

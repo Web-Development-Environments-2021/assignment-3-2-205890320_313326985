@@ -21,8 +21,7 @@ router.get("/Teams", async (req, res, next) => {
       throw{status: 400, message: "invalid query search"};
     }
 
-    const team_list = await team_utils.getTeamsByName(team_name_to_search);
-    const team_list_filtered_by_season = await team_domain.searchForTeamsInOurSeason(team_list);
+    const team_list_filtered_by_season = await team_domain.searchForTeamsInOurSeason(team_name_to_search);
     
     /**
      * Sort
@@ -57,8 +56,9 @@ router.get("/Players", async (req, res, next) => {
       throw{status: 400, message: "invalid query search"};
     }
 
-    const players_list = await player_utils.getPlayersByNameAndTeam(player_name_to_search);
-    const players_list_filtered_by_season = await player_domain.searchForPlayersInOurSeason(players_list);
+    // get from API all of the players
+    // then get players that are in our season
+    const players_list_filtered_by_season = await player_domain.searchForPlayersInOurSeason(player_name_to_search);
 
     /**
      * Filter

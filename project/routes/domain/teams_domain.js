@@ -1,3 +1,4 @@
+const team_utils = require("../utils/teams_utils");
 function extractRelevantTeamData(teams_info) {
     return teams_info.map((team) => {
       const { name, logo_path} = team;
@@ -31,7 +32,8 @@ async function SortTeams(team_list_filtered_by_season_sorted_by_name,sort_way){
   }
 }
 
-async function searchForTeamsInOurSeason(team_list){
+async function searchForTeamsInOurSeason(team_name_to_search){
+  const team_list = await team_utils.getTeamsByName(team_name_to_search);
   const team_list_filtered_by_season=[];
   // push all teams to arr by specific season
   for(var i=0; i<team_list.length; i++){

@@ -1,3 +1,5 @@
+const player_utils = require("../utils/players_utils");
+
 // get from data we have got from http req' the relevant to response
 function extractRelevantPlayerData(players_info) {
     return players_info.map((player_info) => {
@@ -45,7 +47,8 @@ async function getPlayersByTeam(team_id) {
   return players_info;
 }
 
-async function searchForPlayersInOurSeason(players_list){
+async function searchForPlayersInOurSeason(player_name_to_search){
+  const players_list = await player_utils.getPlayersByNameAndTeam(player_name_to_search);
   const players_list_filtered_by_season=[];
   // add to array only players that are in teams that are playing in SuperLiga
   for(var i=0; i<players_list.length; i++){
