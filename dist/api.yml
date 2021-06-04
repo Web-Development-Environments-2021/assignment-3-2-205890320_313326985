@@ -372,7 +372,7 @@ paths:
       - name: filter
         in: query
         description: how to filter results, can be done by position of player or by team name
-        required: false
+        required: true
         style: form
         explode: true
         schema:

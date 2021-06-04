@@ -18,15 +18,7 @@ async function removeOldMatchesFromFavorites(){
   );
 }
 
-async function getFavoriteMatches(user_id){
-    removeOldMatchesFromFavorites();
-    const match_ids = await DButils.execQuery(
-        `select match_id 
-        from dbo.FavoriteMatches
-        where user_id='${user_id}'`
-      );
-    return match_ids;
-}
+
 
 // get from list of match ids matches with their info, to stage matches page
 async function getPastMatchesWithInfoByIDsAndEvents(){
@@ -55,8 +47,6 @@ async function getFutureMatches(){
 
 
 
-
-exports.getFavoriteMatches = getFavoriteMatches;
 exports.getPastMatchesWithInfoByIDsAndEvents = getPastMatchesWithInfoByIDsAndEvents;
 exports.getFutureMatches=getFutureMatches;
 

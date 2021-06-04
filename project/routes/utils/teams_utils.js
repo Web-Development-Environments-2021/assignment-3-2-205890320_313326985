@@ -42,6 +42,7 @@ async function getTeamInfoById(id) {
 }
 
 
+
 exports.getTeamsByName=getTeamsByName;
 exports.getTeamsInfo=getTeamsInfo;
 exports.getTeamInfoById=getTeamInfoById;

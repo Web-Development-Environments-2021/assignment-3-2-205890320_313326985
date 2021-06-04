@@ -1,7 +1,8 @@
 var express = require("express");
 var router = express.Router();
 const DButils = require("./utils/DButils");
-const matches_utils = require("./utils/matches_utils");
+const matches_domain = require("./utils/matches_domain");
+
 
 /**
  * Authenticate all incoming requests by middleware
@@ -27,7 +28,7 @@ router.use(async function (req, res, next) {
 // function to get past matches for current stage matches
 router.get("/pastMatches", async (req, res, next) => {
 try{
-    const pastMatches = await matches_utils.getPastMatchesWithInfoByIDsAndEvents();
+    const pastMatches = await matches_domain.getPastMatchesForStageMatches();
     res.status(200).send(pastMatches);
 }   
 catch(error){
@@ -38,7 +39,7 @@ catch(error){
 // function to get future matches for current stage matches
 router.get("/futureMatches", async (req, res, next) => {
 try{
-    const futureMatches = await matches_utils.getFutureMatches();
+    const pastMatches = await matches_domain.getFutureMatches();
     res.status(200).send(futureMatches);
 }   
 catch(error){

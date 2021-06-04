@@ -30,5 +30,16 @@ async function getMatchesInfo(matches_ids_list) {
   return await Promise.all(promises);
 }
 
+async function getFavoriteMatches(user_id){
+  removeOldMatchesFromFavorites();
+  const match_ids = await DButils.execQuery(
+      `select match_id 
+      from dbo.FavoriteMatches
+      where user_id='${user_id}'`
+    );
+  return match_ids;
+}
+
 exports.markMatchAsFavorite=markMatchAsFavorite;
 exports.getMatchesInfo = getMatchesInfo;
+exports.getFavoriteMatches = getFavoriteMatches;

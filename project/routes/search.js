@@ -1,7 +1,5 @@
 var express = require("express");
 var router = express.Router();
-const team_utils = require("./utils/teams_utils");
-const player_utils = require("./utils/players_utils");
 const player_domain = require("../routes/domain/players_domain");
 const team_domain = require("../routes/domain/teams_domain");
 
@@ -43,7 +41,7 @@ router.get("/Players", async (req, res, next) => {
   try{
      // sanity checks
      const amountOfParams = Object.keys(req.query).length;
-     if (req.query.query == undefined || req.query.sort == undefined || req.query.filter == undefined || amountOfParams > 4){
+     if (req.query.query == undefined || req.query.sort == undefined || req.query.filter == undefined || amountOfParams > 3){
       throw{status: 400, message: "invalid parameter names"};
     }
 
