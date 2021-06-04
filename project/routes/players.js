@@ -32,8 +32,8 @@ try{
   if(!(/^[0-9]+$/.test(player_id))){
     throw{status:401, message: "This is not a valid player id!"}
   }
-  const player_info = await player_utils.getPlayerById(player_id);
-  const results = await player_domain.extractPersonalPagePlayerData(player_info.data.data);
+  // const player_info = await player_utils.getPlayerById(player_id);
+  const results = await player_domain.extractPersonalPagePlayerData(player_id);
   // returning 0 means error from help function
   if (results==0){
     throw{status:401, message: "This player id is not in our league!"}

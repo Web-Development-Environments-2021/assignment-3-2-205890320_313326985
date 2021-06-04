@@ -16,8 +16,10 @@ function extractRelevantPlayerData(players_info) {
   }
   
   // get from data we have got from http req', data for personal page
-function extractPersonalPagePlayerData(player_info) {
-  // return player_info => {
+async function extractPersonalPagePlayerData(player_id) {
+
+    const player_info = (await player_utils.getPlayerById(player_id)).data.data;
+
     if(player_info.team.data.current_season_id != 17328){
       return 0;
     }
