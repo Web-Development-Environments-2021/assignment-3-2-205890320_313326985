@@ -36,19 +36,6 @@ async function getMatchesInfo(matches_ids_list) {
 }
 //----------------------------------------------//
 
-async function removeOldMatchesFromFavorites(){
-  await DButils.execQuery(
-    `DELETE
-    from dbo.FavoriteMatches
-    where match_id
-    in(
-      select match_id
-      from dbo.Matches
-      where date_time < GETDATE()
-    )`
-  );
-}
-
 
 
 // get from list of match ids matches with their info, to stage matches page

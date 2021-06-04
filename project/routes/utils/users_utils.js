@@ -31,7 +31,7 @@ async function getMatchesInfo(matches_ids_list) {
 }
 
 async function getFavoriteMatches(user_id){
-  removeOldMatchesFromFavorites();
+  await removeOldMatchesFromFavorites();
   const match_ids = await DButils.execQuery(
       `select match_id 
       from dbo.FavoriteMatches
@@ -39,6 +39,21 @@ async function getFavoriteMatches(user_id){
     );
   return match_ids;
 }
+
+async function removeOldMatchesFromFavorites(){
+  await DButils.execQuery(
+    `DELETE
+    from dbo.FavoriteMatches
+    where match_id
+    in(
+      select match_id
+      from dbo.Matches
+      where date_time < GETDATE()
+    )`
+  );
+}
+
+
 
 exports.markMatchAsFavorite=markMatchAsFavorite;
 exports.getMatchesInfo = getMatchesInfo;

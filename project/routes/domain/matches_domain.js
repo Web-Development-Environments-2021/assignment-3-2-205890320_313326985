@@ -5,9 +5,9 @@ async function getPastMatchesForStageMatches(){
     return await matches_utils.getPastMatchesWithInfoByIDsAndEvents();
 }
 
-async function getFutureMatchesForStageMatches(){
-    return await matches_utils.getFutureMatches();
-}
+// async function getFutureMatchesForStageMatches(){
+//     return await matches_utils.getFutureMatches();
+// }
 
 function validDate(date){
     var isDate;
@@ -129,4 +129,3 @@ exports.updateResultsDB = updateResultsDB;
 exports.getFutureMatches=getFutureMatches;
 exports.getPastMatchWithoutResult=getPastMatchWithoutResult
 exports.getPastMatchesForStageMatches = getPastMatchesForStageMatches;
-exports.getFutureMatchesForStageMatches = getFutureMatchesForStageMatches;

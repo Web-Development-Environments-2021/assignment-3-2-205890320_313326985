@@ -1,7 +1,7 @@
 var express = require("express");
 var router = express.Router();
 const DButils = require("./utils/DButils");
-const users_domain = require("./utils/users_domain");
+const users_domain = require("./domain/users_domain");
 
 /**
  * Authenticate all incoming requests by middleware
@@ -47,6 +47,11 @@ router.use(async function (req, res, next) {
  */
  router.post("/favoriteMatches", async (req, res, next) => {
   try {
+    const amountOfParams = Object.keys(req.query).length;
+    // sanity check
+     if (req.body.match_id == undefined ||  !(/^[0-9]+$/.test(req.body.match_id)) ||amountOfParams > 0 ){
+      throw{status: 400, message: "invalid body"};
+    }
     const user_id = req.session.user_id;
     const match_Id_from_body = req.body.match_id;
     const num_of_error = await users_domain.markFavorites(user_id, match_Id_from_body);
