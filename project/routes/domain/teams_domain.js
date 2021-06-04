@@ -1,4 +1,6 @@
 const teams_utils = require("../utils/teams_utils");
+
+
 function extractRelevantTeamData(teams_info) {
     return teams_info.map((team) => {
       const { name, logo_path} = team;
@@ -51,7 +53,7 @@ async function getRelevantTeams(){
   return teams_utils.getTeamsBySeason();
 }
 
-async function validTeam(local_team, visitor_team){
+async function validTeamNames(local_team, visitor_team){
   const teams = await teams_utils.getTeamsBySeason();
   const local_team_id = teams.find(x => x.name === local_team)
   const visitor_team_id = teams.find(x => x.name === visitor_team)
@@ -65,9 +67,22 @@ async function validTeam(local_team, visitor_team){
 
 }
 
+async function validTeamID(team_id){
+  const teams = await teams_utils.getTeamsBySeason();
+  return teams.find(x => x.id === team_id)
+}
+
+async function getTeamInfoById(teamId){
+  var team_info = await teams_utils.getTeamInfoById(teamId);
+  team_info = extractRelevantTeamData(team_info);
+  return team_info;
+}
+
 
 exports.SortTeams = SortTeams;
 exports.extractRelevantTeamData = extractRelevantTeamData;
 exports.searchForTeamsInOurSeason = searchForTeamsInOurSeason;
 exports.getRelevantTeams = getRelevantTeams;
-exports.validTeam = validTeam;
+exports.validTeamNames = validTeamNames;
+exports.validTeamID=validTeamID;
+exports.getTeamInfoById=getTeamInfoById;

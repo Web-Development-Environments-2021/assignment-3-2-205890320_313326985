@@ -19,6 +19,11 @@ function validDate(date){
     return isDate;
   }
 
+  function formatDateTime(date_time){
+    var datetime = new Date(date_time).toISOString().slice(0,19).replace('T', ' ');
+    return datetime;
+  }
+
 
 
 function validResults(home, away){
@@ -92,26 +97,60 @@ async function addMatchDB(date_time, local_team_id, local_team_name, visitor_tea
 
   
 async function getFutureMatches(){
-    const futureMatches = await DButils.execQuery(
-      `select match_id,date_time,local_team_id,local_team_name,visitor_team_id,visitor_team_name,venue_id,venue_name
-      from dbo.Matches
-      where date_time > GETDATE()`
+    var currentdate = new Date();
+    var futureMatches = await DButils.execQuery(
+        `select match_id,date_time,local_team_id,local_team_name,visitor_team_id,visitor_team_name,venue_id,venue_name
+        from dbo.Matches`
     );
+    futureMatches.forEach(function(match, i) {
+        match.date_time = formatDateTime(match.date_time)
+
+    })
+
+    futureMatches = futureMatches.filter(function(match){
+        return Date.parse(match.date_time) > Date.parse(currentdate);
+    })
     return futureMatches;
   }
 
+
+async function getPastMatches(){
+    var currentdate = new Date();
+    var pastMatches = await DButils.execQuery(
+        `select match_id,date_time,local_team_id,local_team_name,visitor_team_id,visitor_team_name,venue_id,venue_name,home_goals, away_goals
+        from dbo.Matches`
+    );
+    pastMatches.forEach(function(match, i) {
+        match.date_time = formatDateTime(match.date_time)
+
+    })
+    pastMatches = pastMatches.filter(function(match){
+        return Date.parse(match.date_time) <= Date.parse(currentdate);
+    })
+
+    return pastMatches;
+
+}
 async function getPastMatchWithoutResult(){
-    const MatchesWithoutResults = await DButils.execQuery(
-        `select match_id,date_time,local_team_id,local_team_name,visitor_team_id,visitor_team_name,venue_id,venue_name
-        from dbo.Matches
-        where date_time <= GETDATE() and home_goals IS NULL and away_goals IS NULL`
-      );
-      return MatchesWithoutResults;
+    var MatchesWithoutResults = await getPastMatches();
+    MatchesWithoutResults = MatchesWithoutResults.filter(function(match){
+        return match.home_goals == null && match.away_goals == null;
+    })
+    return MatchesWithoutResults;
 }
 
-  
+async function nextMatchPlanned(){
+    var futureMatches = await getFutureMatches();
+    next_match = futureMatches.sort((a,b) => a.date_time - b.date_time);
+
+    return next_match[0];
+}
+
+
+
 
 exports.validDate = validDate;
+exports.formatDateTime = formatDateTime;
 exports.validResults = validResults;
 exports.sortMatches = sortMatches;
 exports.validMatch = validMatch;
@@ -119,5 +158,8 @@ exports.addMatchDB = addMatchDB;
 exports.updateRefereeDB = updateRefereeDB;
 exports.updateResultsDB = updateResultsDB;
 exports.getFutureMatches=getFutureMatches;
-exports.getPastMatchWithoutResult=getPastMatchWithoutResult
+exports.getPastMatches=getPastMatches;
+exports.getPastMatchWithoutResult=getPastMatchWithoutResult;
+exports.nextMatchPlanned=nextMatchPlanned;
+
   

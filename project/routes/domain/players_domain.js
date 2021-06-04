@@ -42,7 +42,8 @@ async function getPlayersByTeam(team_id) {
   //let player_ids_list = await getPlayerIdsByTeam(team_id);
   //let players_info = await getPlayersInfo(player_ids_list);
 
-  let players_info = await getPlayersInfo(team_id);
+  var players_info = await player_utils.getPlayersInfo(team_id);
+  players_info = extractRelevantPlayerData(players_info);
 
   return players_info;
 }

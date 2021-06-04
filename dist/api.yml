@@ -135,8 +135,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Team"
-        "404":
-          description: teamId does not exist
+        "400":
+          description: Bad request
   /players/playerFullDetails/{playerId}:
     get:
       summary: get full deatils about a player
@@ -218,6 +218,37 @@ paths:
           description: Bad request
         "401":
           description: You have not authenticated yet, please sign in
+    get:
+      tags:
+      - UnionAgent
+      summary: show all matches and referees in the system  
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  matches:
+                    type: object
+                    properties:
+                      futurematches:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/FutureMatchPreview'
+                      pastmatches:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/MatchPreview'
+                  referees:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Referee'
+        "401":
+          description: You have not authenticated yet, please sign in
+        "400":
+          description: "Bad request"
   /UnionAgent/addEventsLog:
     post:
       tags:
@@ -249,6 +280,24 @@ paths:
           description: Bad request
         "401":
           description: You have not authenticated yet, please sign in
+    get:
+      tags:
+      - UnionAgent
+      summary: show all matches played to add events  
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MatchPreview'
+        "401":
+          description: You have not authenticated yet, please sign in
+        "400":
+          description: "Bad request"
+  
   /UnionAgent/UpdateResultsMatch:
     put:
       tags:

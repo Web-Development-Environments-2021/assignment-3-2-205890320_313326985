@@ -44,7 +44,7 @@ async function getTeamsInfo() {
     )
   );
   let teams_info = await Promise.all(promises);
-  return extractRelevantTeamData(teams_info);
+  return teams_info;
 }
 
 async function getTeamInfoById(id) {
@@ -55,7 +55,7 @@ async function getTeamInfoById(id) {
         },
       })
   teams_info.push(team_info.data.data);
-  return extractRelevantTeamData(teams_info);
+  return teams_info;
 }
 
 

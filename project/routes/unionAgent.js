@@ -50,7 +50,7 @@ router.post("/addMatch", async (req, res, next) => {
     }
     
     // check if local_team and visitor_team exist -> and save the id
-    const teams_id = await teams_domain.validTeam(req.body.local_team_name, req.body.visitor_team_name);
+    const teams_id = await teams_domain.validTeamNames(req.body.local_team_name, req.body.visitor_team_name);
     if(teams_id == false){
       incorect_value += " teams"
     }
@@ -125,7 +125,20 @@ router.put("/UpdateRefereeMatch", async (req, res, next) => {
   }
 });
 
+// show all the matches and referees in the system
+router.get("/UpdateRefereeMatch", async (req, res, next) =>{
+  try{
+    const futureMatches = await matches_domain.getFutureMatches();
+    const pastMatches = await matches_domain.getPastMatches();
+    const referees = await league_domain.getAllRelevantReferees();
 
+    res.send({"futurematches":futureMatches, "pastmatches":pastMatches, "referees":referees });
+
+  }catch (error) {
+    next(error);
+  }
+  
+});
 
 
 // add event log to match from the matches table in DB
@@ -157,6 +170,17 @@ router.post("/addEventsLog", async (req, res, next) => {
 
       
     res.status(201).send("successful operation");
+  } catch (error) {
+    next(error);
+  }
+});
+
+// show all the past matches that need to update results
+router.get("/addEventsLog", async (req, res, next) => {
+  try {
+    const matches = await matches_domain.getPastMatches();
+
+    res.send(matches);  
   } catch (error) {
     next(error);
   }

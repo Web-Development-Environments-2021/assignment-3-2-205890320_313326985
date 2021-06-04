@@ -38,7 +38,7 @@ async function getPlayersInfo(team_id){
   team.data.data.squad.data.map((player) =>
     players_info.push(player.player.data)
   );
-  return extractRelevantPlayerData(players_info);
+  return players_info;
 }
 
 exports.getPlayersByNameAndTeam=getPlayersByNameAndTeam;

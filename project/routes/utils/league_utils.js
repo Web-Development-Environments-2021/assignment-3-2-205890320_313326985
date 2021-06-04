@@ -12,20 +12,32 @@ async function getLeagueDetails() {
       },
     }
   );
-  const stage = await axios.get(
+  if( league.data.data.current_stage_id != null){
+    const stage = await axios.get(
     `https://soccer.sportmonks.com/api/v2.0/stages/${league.data.data.current_stage_id}`,
-    {
+      {
       params: {
         api_token: process.env.api_token,
-      },
+        },
+      }
+    );
+  
+    return {
+      league_name: league.data.data.name,
+      current_season_name: league.data.data.season.data.name,
+      current_stage_name: stage.data.data.name,
+    };
+  }
+  else{
+    return {
+      league_name: league.data.data.name,
+      current_season_name: league.data.data.season.data.name,
+      current_stage_name: null,
     }
-  );
-  return {
-    league_name: league.data.data.name,
-    current_season_name: league.data.data.season.data.name,
-    current_stage_name: stage.data.data.name,
+    
+  }
+
     // next game details should come from DB
-  };
 }
 
 
