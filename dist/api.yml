@@ -193,8 +193,8 @@ paths:
           description: "You have not authenticated yet, please sign in"
         "400":
           description: "Wrong sort type"
-  /UnionAgent/ConnectRefereeToMatch:
-    post:
+  /UnionAgent/UpdateRefereeMatch:
+    put:
       tags:
       - UnionAgent
       summary: Connect a referee to a match
@@ -215,7 +215,7 @@ paths:
         "201":
           description: successful operation
         "400":
-          description: it is not a valid match ID or not valid referee ID
+          description: Bad request
         "401":
           description: You have not authenticated yet, please sign in
   /UnionAgent/addEventsLog:
@@ -246,12 +246,10 @@ paths:
         "201":
           description: successful operation
         "400":
-          description: it is not a valid past match ID
+          description: Bad request
         "401":
           description: You have not authenticated yet, please sign in
-        "404":
-          description: The server can not find the requested resource
-  /UnionAgent/UpdateResultsToMatch:
+  /UnionAgent/UpdateResultsMatch:
     put:
       tags:
       - UnionAgent
@@ -265,10 +263,8 @@ paths:
       responses:
         "201":
           description: successful operation
-        "204":
-          description: There is no content to update for this request
         "400":
-          description: it is not a valid past match ID
+          description: Bad request
         "401":
           description: You have not authenticated yet, please sign in
   /UnionAgent/addMatch:  
@@ -288,7 +284,24 @@ paths:
         "401":
           description: You have not authenticated yet, please sign in
         "400":
-          description: "Bad request"
+          description: "Bad request" 
+    # get:
+    #   tags:
+    #   - UnionAgent
+    #   summary: show all the data that needed to add match
+    #   requestBody:
+    #     content:
+    #       application/json:
+    #         schema:
+    #           $ref: '#/components/schemas/MatchPreview'
+    #     required: true
+    #   responses:
+    #     "201":
+    #       description: successful operation
+    #     "401":
+    #       description: You have not authenticated yet, please sign in
+    #     "400":
+    #       description: "Bad request"
 
   /search/Teams:
     get:
@@ -680,6 +693,9 @@ components:
         type:
           type: string
           example: Yellow Card
+        description:
+          type: string
+          example: to Messi
     SearchTeams:
       type: object
       properties:

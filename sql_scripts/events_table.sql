@@ -4,6 +4,7 @@ CREATE TABLE [dbo].[Events](
     [date_and_time_happend] [DATETIME] NOT NULL,
     [minute] [int] NOT NULL,
     [type] varchar (30) NOT NULL CHECK (type IN('Goal', 'Red Card', 'Yellow Card', 'Injury', 'Subsitute','None')) DEFAULT 'None',
+    [description] [varchar] NOT NULL ,
     PRIMARY KEY (event_id, match_id),
     FOREIGN KEY (match_id) REFERENCES Matches(match_id)
 )
