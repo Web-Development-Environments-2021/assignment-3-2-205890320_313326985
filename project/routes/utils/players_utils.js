@@ -1,6 +1,6 @@
 const axios = require("axios");
 const api_domain = "https://soccer.sportmonks.com/api/v2.0";
-//const TEAM_ID = "85";
+
 
 // get players by name typed in query, include team in http req'
 async function getPlayersByNameAndTeam(player_name){

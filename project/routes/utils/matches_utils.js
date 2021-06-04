@@ -2,8 +2,39 @@ const axios = require("axios");
 const e = require("express");
 const api_domain = "https://soccer.sportmonks.com/api/v2.0";
 const DButils = require("./DButils");
-const SEASON_ID = 17328;
+//const SEASON_ID = 17328;
 
+//----------------------------------------------//
+// TODO : check why dont work
+// async function getAllMatchesID(){
+//   let matches_ids_list = [];
+//   const match = axios.get(`${api_domain}/seasons/${SEASON_ID}`, {
+//     params: {
+//       api_token: process.env.api_token,
+//       include: "fixtures",
+//     },
+//   });
+//   match.data.feaxtures.data.map((match) =>
+//     matches_ids_list.push(match.match_id)
+//   );
+//   return matches_ids_list
+// }
+
+
+async function getMatchesInfo(matches_ids_list) {
+  let promises = [];
+  matches_ids_list.map((id) =>
+    promises.push(
+        DButils.execQuery(
+            `select match_id,date_time,local_team_id,visitor_team_id,venue_id 
+            from dbo.Matches 
+            where match_id='${id}'`
+        )
+    )
+  );
+  return await Promise.all(promises);
+}
+//----------------------------------------------//
 
 async function removeOldMatchesFromFavorites(){
   await DButils.execQuery(
@@ -36,17 +67,12 @@ async function getPastMatchesWithInfoByIDsAndEvents(){
   return pastmatches;
 }
 
-async function getFutureMatches(){
-  const futureMatches = await DButils.execQuery(
-    `select match_id,date_time,local_team_id,visitor_team_id,venue_id 
-    from dbo.Matches
-    where date_time > GETDATE()`
-  );
-  return futureMatches;
-}
 
-
+//----------------------------------------------//
+// exports.getAllMatchesID = getAllMatchesID;
+exports.getMatchesInfo = getMatchesInfo;
+//----------------------------------------------//
 
 exports.getPastMatchesWithInfoByIDsAndEvents = getPastMatchesWithInfoByIDsAndEvents;
-exports.getFutureMatches=getFutureMatches;
+
 

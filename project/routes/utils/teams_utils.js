@@ -15,6 +15,21 @@ async function getTeamsByName(team_name) {
   return team_info_list;
 }
 
+async function getTeamsBySeason() {
+  let teams_list = [];
+  const season_id = await league_utils.getCurrentSeasonID();
+  const teams = await axios.get(`${api_domain}/teams/season/${season_id}`, {
+    params: {
+      api_token: process.env.api_token,
+    },
+  });
+  teams.data.data.map((team_info) =>
+    teams_list.push({"id":team_info.id, "name":team_info.name})
+  );
+  return teams_list;
+}
+
+
 async function getTeamsInfo() {
   let promises = [];
   players_ids_list.map((id) =>
@@ -46,3 +61,4 @@ async function getTeamInfoById(id) {
 exports.getTeamsByName=getTeamsByName;
 exports.getTeamsInfo=getTeamsInfo;
 exports.getTeamInfoById=getTeamInfoById;
+exports.getTeamsBySeason = getTeamsBySeason;

@@ -7,6 +7,8 @@ const matches_domain = require("./utils/matches_domain");
 /**
  * Authenticate all incoming requests by middleware
  */
+
+/// WHY THIS IS HERE? 
 router.use(async function (req, res, next) {
   if (req.session && req.session.user_id) {
     DButils.execQuery("SELECT user_id FROM dbo.Users")
@@ -23,8 +25,6 @@ router.use(async function (req, res, next) {
 });
 
 
-
-
 // function to get past matches for current stage matches
 router.get("/pastMatches", async (req, res, next) => {
 try{
@@ -39,16 +39,13 @@ catch(error){
 // function to get future matches for current stage matches
 router.get("/futureMatches", async (req, res, next) => {
 try{
-    const pastMatches = await matches_domain.getFutureMatches();
+    const futureMatches = await matches_domain.getFutureMatches();
     res.status(200).send(futureMatches);
 }   
 catch(error){
     next(error);
 }
 });
-
-
-
 
 
 module.exports = router;

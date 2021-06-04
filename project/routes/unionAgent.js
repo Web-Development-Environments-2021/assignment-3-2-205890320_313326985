@@ -1,6 +1,10 @@
 var express = require("express");
 var router = express.Router();
 const DButils = require("./utils/DButils");
+const teams_domain = require("./domain/teams_domain");
+const league_domain = require("./domain/league_domain");
+const matches_domain = require("./domain/matches_domain");
+
 
 /**
  * Authenticate all incoming requests by middleware
@@ -24,26 +28,9 @@ const DButils = require("./utils/DButils");
 // send all matches of union agent
 router.get("", async (req, res, next) => {
   try {
-    // parameters exists
-    // valid parameters
-    const matches = await DButils.execQuery(
-      "SELECT * FROM dbo.Matches"
-    );
-    const sort = req.query.sort;
-    
-    // sort by match id
-    if (sort == 'none'){
-      matches.sort((a,b) => a.match_id - b.match_id);
-    }
-
-    // sort by date time descending 
-    else if (sort == 'Date'){
-      matches.sort((a,b) => b.date_time - a.date_time);
-    }
-
-    // sort by local tam id ascending
-    else if (sort == 'Teams'){
-      matches.sort((a,b) => a.local_team_id - b.local_team_id);
+    const matches = await matches_domain.sortMatches(req.query.sort)
+    if( matches == false){
+      throw { status: 400, message: "Wrong sort type" };
     }
 
     res.send(matches);  
@@ -55,21 +42,36 @@ router.get("", async (req, res, next) => {
 // add new match to matches table in DB
 router.post("/addMatch", async (req, res, next) => {
   try {
-    // parameters exists
-    // valid parameters
-    const matches = await DButils.execQuery(
-      "SELECT match_id FROM dbo.Matches"
-    );
+    var incorect_value = ""
 
-    // There is already match id in this table
-    if (matches.find((x) => x.match_id === req.body.match_id))
-      throw { status: 409, message: "Match ID taken" };
+    // check if the date is valid (only a future date)
+    if(!matches_domain.validDate(req.body.date_time)){
+      incorect_value += " date"
+    }
+    
+    // check if local_team and visitor_team exist -> and save the id
+    const teams_id = await teams_domain.validTeam(req.body.local_team_name, req.body.visitor_team_name);
+    if(teams_id == false){
+      incorect_value += " teams"
+    }
 
+    // check if venue exist -> and save the id
+    const venue_id = await league_domain.validVenue(req.body.venue_name);
+    if(venue_id == false){
+      incorect_value += " venue"    
+    }
+
+    // check if referee exist 
+    if (!league_domain.validReferee(req.body.referee_id)){
+      incorect_value += " referee"  
+    }
+
+    if (incorect_value.length != 0){
+      throw { status: 400, message: "Bad request:" + incorect_value };
+    }
 
     // insert match to matches table
-    await DButils.execQuery(
-      `INSERT INTO dbo.Matches (date_time,local_team_id,visitor_team_id,venue_id,referee_id,home_goals,away_goals) VALUES ('${req.body.date_time}', '${req.body.local_team_id}', '${req.body.visitor_team_id}', '${req.body.venue_id}','${req.body.referee_id}','${req.body.home_goals}','${req.body.away_goals}')`
-  );
+    await matches_domain.addMatchDB(req.body.date_time, teams_id.local,req.body.local_team_name, teams_id.visitor, req.body.visitor_team_name,venue_id,req.body.venue_name,req.body.referee_id);
 
     res.status(201).send("The match successfully saved to the system");
   } catch (error) {
@@ -77,35 +79,46 @@ router.post("/addMatch", async (req, res, next) => {
   }
 });
 
-// add referee to matche from the matches table in DB
-router.post("/ConnectRefereeToMatch", async (req, res, next) => {
-  try {
-    // parameters exists
-    // valid parameters
-    const referees = await DButils.execQuery(
-      "SELECT referee_id FROM dbo.Referees"
-    );
-    const matches = await DButils.execQuery(
-      "SELECT match_id FROM dbo.Matches"
-    );
+// show all relevant details for add new match
+router.get("/addMatch", async (req, res, next) =>{
+  try{
+    const teams = await teams_domain.getRelevantTeams();
+    const venues = await league_domain.getAllRelevantVenues();
+    const referees = await league_domain.getAllRelevantReferees();
 
+    res.send({"teams":teams, "venues":venues, "referees":referees });
+  }catch (error) {
+    next(error);
+  }
+  
+});
+
+// add referee to matche from the matches table in DB
+router.put("/UpdateRefereeMatch", async (req, res, next) => {
+  try {
+    var incorect_value = ""
     const match_id = parseInt(req.query.match_id);
     const referee_id = parseInt(req.query.referee_id);
 
 
     // Check if the match id and referee id exist in the match table
-    if (matches.find((x) => x.match_id === match_id) && referees.find((x) => x.referee_id === referee_id)){
-      // update the referee id in the matches table
-      await DButils.execQuery(
-        `UPDATE dbo.Matches
-        SET referee_id = '${referee_id}'
-        WHERE match_id = '${match_id}';`
-      );
+    if (!matches_domain.validMatch(match_id)){
+      incorect_value += " match"
     }
-    else{
-      throw { status: 400, message: "it is not a valid match ID or not valid referee ID" };
+
+    if (!league_domain.validReferee(referee_id)){
+      incorect_value += " referee"
     }
-      
+
+    if (incorect_value.length != 0){
+      throw { status: 400, message: "Bad request:" + incorect_value };
+
+    }
+
+    // update the referee id in the matches table
+    matches_domain.updateRefereeDB(referee_id, match_id);
+    
+
     res.status(201).send("successful operation");
   } catch (error) {
     next(error);
@@ -113,28 +126,33 @@ router.post("/ConnectRefereeToMatch", async (req, res, next) => {
 });
 
 
+
+
 // add event log to match from the matches table in DB
 router.post("/addEventsLog", async (req, res, next) => {
   try {
-    // parameters exists
-    // valid parameters
-    const matches = await DButils.execQuery(
-      "SELECT match_id FROM dbo.Matches"
-    );
-
+    var incorect_value = "";
     const match_id = parseInt(req.query.match_id);
     const eventLogs = req.body;
 
-    if (matches.find((x) => x.match_id === match_id)){
-      for(var i = 0 ; i < eventLogs.length; i++){
-        const x = req.body[i].date_and_time_happend;
-        await DButils.execQuery(
-          `INSERT INTO dbo.Events (match_id,date_and_time_happend,minute,type) VALUES ('${match_id}', '${eventLogs[i].date_and_time_happend}', '${eventLogs[i].minute}', '${eventLogs[i].type}')`
-        );
-      }
+    if (!matches_domain.validMatch(match_id)){
+      incorect_value += " match"
     }
-    else{
-      throw { status: 400, message: "	it is not a valid match ID" };
+    for(var i = 0 ; i < eventLogs.length; i++){
+      // check if valid date
+
+      // check valid minute
+
+      // check type event
+
+      
+      await DButils.execQuery(
+        `INSERT INTO dbo.Events (match_id,date_and_time_happend,minute,type) VALUES ('${match_id}', '${eventLogs[i].date_and_time_happend}', '${eventLogs[i].minute}', '${eventLogs[i].type}')`
+      );
+    }
+    
+    if (incorect_value.length != 0){
+      throw { status: 400, message: "Bad request:" + incorect_value };
     }  
 
       
@@ -146,29 +164,36 @@ router.post("/addEventsLog", async (req, res, next) => {
 
 
 // update match score of a match in matches table in DB
-router.put("/UpdateResultsToMatch", async (req, res, next) => {
+router.put("/UpdateResultsMatch", async (req, res, next) => {
   try {
-    // parameters exists
-    // valid parameters
-    const matches = await DButils.execQuery(
-      "SELECT match_id FROM dbo.Matches"
-    );
+    var incorect_value = "";
 
-    const match_id = parseInt(req.body.match_id);
-
-    if (matches.find((x) => x.match_id === match_id)){
-      await DButils.execQuery(
-        `UPDATE dbo.Matches
-        SET home_goals = '${req.body.home_goals}', away_goals = '${req.body.away_goals}'
-        WHERE match_id = '${match_id}';`
-      );
+    if (!matches_domain.validMatch(req.body.match_id)){
+      incorect_value = " match";
     }
-    else{
-      throw { status: 400, message: "	it is not a valid match ID" };
-    }  
 
-      
+    if(!matches_domain.validResults(req.body.home_goals, req.body.away_goals)){
+      incorect_value = " results";
+    }
+
+    if (incorect_value.length != 0 ){
+      throw { status: 400, message: "Bad request:" + incorect_value };
+    }
+
+    matches_domain.updateResultsDB(req.body.match_id, req.body.home_goals,req.body.away_goals);
+
     res.status(201).send("successful operation");
+  } catch (error) {
+    next(error);
+  }
+});
+
+// show all the past matches that need to update results
+router.get("/UpdateResultsMatch", async (req, res, next) => {
+  try {
+    const matches = await matches_domain.getPastMatchWithoutResult()
+
+    res.send(matches);  
   } catch (error) {
     next(error);
   }

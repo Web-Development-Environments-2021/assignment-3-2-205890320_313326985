@@ -22,10 +22,6 @@ const player_domain = require("../routes/domain/players_domain");
   }
 });
 
-
-
-
-
 router.get("/teamFullDetails/:teamId", async (req, res, next) => {
   let team_details = {};
   try {
@@ -64,9 +60,7 @@ router.get("/teamFullDetails/:teamId", async (req, res, next) => {
     team_details["team's future matches"]=futureMatches;
 
 
-                
-
-
+              
     res.send(team_details);
   } catch (error) {
     next(error);

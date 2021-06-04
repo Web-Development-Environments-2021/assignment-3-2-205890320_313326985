@@ -191,10 +191,10 @@ paths:
                   $ref: '#/components/schemas/MatchPreview'
         "401":
           description: "You have not authenticated yet, please sign in"
-        "404":
-          description: "The server can not find the requested resource"
-  /UnionAgent/ConnectRefereeToMatch:
-    post:
+        "400":
+          description: "Wrong sort type"
+  /UnionAgent/UpdateRefereeMatch:
+    put:
       tags:
       - UnionAgent
       summary: Connect a referee to a match
@@ -215,7 +215,7 @@ paths:
         "201":
           description: successful operation
         "400":
-          description: it is not a valid match ID or not valid referee ID
+          description: Bad request
         "401":
           description: You have not authenticated yet, please sign in
   /UnionAgent/addEventsLog:
@@ -246,12 +246,10 @@ paths:
         "201":
           description: successful operation
         "400":
-          description: it is not a valid past match ID
+          description: Bad request
         "401":
           description: You have not authenticated yet, please sign in
-        "404":
-          description: The server can not find the requested resource
-  /UnionAgent/UpdateResultsToMatch:
+  /UnionAgent/UpdateResultsMatch:
     put:
       tags:
       - UnionAgent
@@ -265,12 +263,27 @@ paths:
       responses:
         "201":
           description: successful operation
-        "204":
-          description: There is no content to update for this request
         "400":
-          description: it is not a valid past match ID
+          description: Bad request
         "401":
           description: You have not authenticated yet, please sign in
+    get:
+      tags:
+      - UnionAgent
+      summary: show all matches played to add results  
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FutureMatchPreview'
+        "401":
+          description: You have not authenticated yet, please sign in
+        "400":
+          description: "Bad request"
   /UnionAgent/addMatch:  
     post:
       tags:
@@ -285,12 +298,56 @@ paths:
       responses:
         "201":
           description: successful operation
-        "204":
-          description: There is no content to send for this request
         "401":
           description: You have not authenticated yet, please sign in
-        "404":
-          description: The server can not find the requested resource
+        "400":
+          description: "Bad request" 
+    get:
+      tags:
+      - UnionAgent
+      summary: show all the data that needed to add match
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  teams:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          description: Team id
+                          example: 53
+                        name:
+                          type: string
+                          description: Team name
+                          example: "Celtic"
+                  venues:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          description: Venue id
+                          example: 8909
+                        name:
+                          type: string
+                          description: Venue name
+                          example: "Celtic Park"
+                  referees:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Referee'
+        "401":
+          description: You have not authenticated yet, please sign in
+        "400":
+          description: "Bad request"
 
   /search/Teams:
     get:
@@ -597,16 +654,25 @@ components:
         date_time:
           type: string
           format: date-time
-          example: "2020-08-02 15:30:00"
+          example: "2021-08-02 15:30:00"
         local_team_id:
           type: integer
           example: 53
+        local_team_name:
+          type: string
+          example: "Celtic"
         visitor_team_id:
           type: integer
           example: 338
+        visitor_team_name:
+          type: string
+          example: "Hamilton Academical"
         venue_id:
           type: integer
           example: 8909
+        venue_name:
+          type: string
+          example: "Celtic Park"
         referee_id:
           type: integer
           example: 89
@@ -625,16 +691,25 @@ components:
         date_time:
           type: string
           format: date-time
-          example: "2020-08-02 15:30:00"
+          example: "2021-08-02 15:30:00"
         local_team_id:
           type: integer
           example: 53
+        local_team_name:
+          type: string
+          example: "Celtic"
         visitor_team_id:
           type: integer
           example: 338
+        visitor_team_name:
+          type: string
+          example: "Hamilton Academical"
         venue_id:
           type: integer
-          example: 8909 
+          example: 8909
+        venue_name:
+          type: string
+          example: "Celtic Park" 
     Team:
       type: object
       properties:
@@ -673,6 +748,9 @@ components:
         type:
           type: string
           example: Yellow Card
+        description:
+          type: string
+          example: to Messi
     SearchTeams:
       type: object
       properties:
@@ -683,4 +761,20 @@ components:
           type: string
           format: URL
           example: https://cdn.sportmonks.com/images//soccer/teams/11/939.png
+    Referee:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 2
+        firstname:
+          type: string
+          example: "Liad"
+        lastname:
+          type: string
+          example: "Nachshon"
+        course:
+          type: string
+          example: Regular
+
       

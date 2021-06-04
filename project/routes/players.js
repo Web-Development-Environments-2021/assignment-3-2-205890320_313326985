@@ -6,6 +6,7 @@ const player_domain = require("../routes/domain/players_domain");
 /**
  * Authenticate all incoming requests by middleware
  */
+/// WHY THIS IS HERE? 
  router.use(async function (req, res, next) {
   if (req.session && req.session.user_id) {
     DButils.execQuery("SELECT user_id FROM dbo.Users")
@@ -20,7 +21,6 @@ const player_domain = require("../routes/domain/players_domain");
     res.sendStatus(401);
   }
 });
-
 
 
 // gets all relevant (extended) details for specific player id
