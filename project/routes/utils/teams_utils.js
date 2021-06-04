@@ -31,9 +31,8 @@ async function getTeamsBySeason() {
   return teams_list;
 }
 
-//// NEED TO CHECK WHET IS CORRECT
-async function getTeamsInfo(team_ids_list) {
-// async function getTeamsInfo() {
+
+async function getTeamsInfo() {
   let promises = [];
   players_ids_list.map((id) =>
     promises.push(

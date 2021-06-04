@@ -75,14 +75,6 @@ async function getPastMatchesWithInfoByIDsAndEvents(){
   return pastmatches;
 }
 
-async function getFutureMatches(){
-  const futureMatches = await DButils.execQuery(
-    `select match_id,date_time,local_team_id,visitor_team_id,venue_id 
-    from dbo.Matches
-    where date_time > GETDATE()`
-  );
-  return futureMatches;
-}
 
 //----------------------------------------------//
 // exports.getAllMatchesID = getAllMatchesID;
@@ -92,5 +84,5 @@ exports.getMatchesInfo = getMatchesInfo;
 
 exports.getFavoriteMatches = getFavoriteMatches;
 exports.getPastMatchesWithInfoByIDsAndEvents = getPastMatchesWithInfoByIDsAndEvents;
-exports.getFutureMatches=getFutureMatches;
+
 

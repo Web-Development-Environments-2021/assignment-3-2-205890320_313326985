@@ -267,6 +267,23 @@ paths:
           description: Bad request
         "401":
           description: You have not authenticated yet, please sign in
+    get:
+      tags:
+      - UnionAgent
+      summary: show all matches played to add results  
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FutureMatchPreview'
+        "401":
+          description: You have not authenticated yet, please sign in
+        "400":
+          description: "Bad request"
   /UnionAgent/addMatch:  
     post:
       tags:
@@ -285,23 +302,52 @@ paths:
           description: You have not authenticated yet, please sign in
         "400":
           description: "Bad request" 
-    # get:
-    #   tags:
-    #   - UnionAgent
-    #   summary: show all the data that needed to add match
-    #   requestBody:
-    #     content:
-    #       application/json:
-    #         schema:
-    #           $ref: '#/components/schemas/MatchPreview'
-    #     required: true
-    #   responses:
-    #     "201":
-    #       description: successful operation
-    #     "401":
-    #       description: You have not authenticated yet, please sign in
-    #     "400":
-    #       description: "Bad request"
+    get:
+      tags:
+      - UnionAgent
+      summary: show all the data that needed to add match
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  teams:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          description: Team id
+                          example: 53
+                        name:
+                          type: string
+                          description: Team name
+                          example: "Celtic"
+                  venues:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          description: Venue id
+                          example: 8909
+                        name:
+                          type: string
+                          description: Venue name
+                          example: "Celtic Park"
+                  referees:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Referee'
+        "401":
+          description: You have not authenticated yet, please sign in
+        "400":
+          description: "Bad request"
 
   /search/Teams:
     get:
@@ -608,7 +654,7 @@ components:
         date_time:
           type: string
           format: date-time
-          example: "2020-08-02 15:30:00"
+          example: "2021-08-02 15:30:00"
         local_team_id:
           type: integer
           example: 53
@@ -645,16 +691,25 @@ components:
         date_time:
           type: string
           format: date-time
-          example: "2020-08-02 15:30:00"
+          example: "2021-08-02 15:30:00"
         local_team_id:
           type: integer
           example: 53
+        local_team_name:
+          type: string
+          example: "Celtic"
         visitor_team_id:
           type: integer
           example: 338
+        visitor_team_name:
+          type: string
+          example: "Hamilton Academical"
         venue_id:
           type: integer
-          example: 8909 
+          example: 8909
+        venue_name:
+          type: string
+          example: "Celtic Park" 
     Team:
       type: object
       properties:
@@ -706,4 +761,20 @@ components:
           type: string
           format: URL
           example: https://cdn.sportmonks.com/images//soccer/teams/11/939.png
+    Referee:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 2
+        firstname:
+          type: string
+          example: "Liad"
+        lastname:
+          type: string
+          example: "Nachshon"
+        course:
+          type: string
+          example: Regular
+
       
