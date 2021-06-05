@@ -2,6 +2,7 @@ var express = require("express");
 var router = express.Router();
 const DButils = require("./utils/DButils");
 const users_domain = require("./domain/users_domain");
+const matches_domain = require("./domain/matches_domain");
 
 /**
  * Authenticate all incoming requests by middleware
@@ -33,14 +34,19 @@ router.use(async function (req, res, next) {
       throw{status: 400, message: "Not suppose to have any params or body"};
     }
     const user_id = req.session.user_id;
-    const match_ids = await users_domain.getFutureMatchesIDs(user_id);
+    
+    // const match_ids = await matches_domain.getFutureMatches();
+
+    // get favorite matches ids
+    const favoriteMatches_ids = await users_domain.getFavoriteMatchesIDs(user_id);
+
     // returning 0 means error from help function
-    if(match_ids.length == 0){
+    if(favoriteMatches_ids.length == 0){
       throw { status: 204, message: "This user does not have any favorite matches" };
     }
     let match_ids_array = [];
-    match_ids.map((element) => match_ids_array.push(element.match_id)); //extracting match's ids into array
-    const results = await users_domain.getInfoAboutMatches(match_ids_array);
+    favoriteMatches_ids.map((element) => match_ids_array.push(element.match_id)); //extracting match's ids into array
+    const results = await matches_domain.getMatchesInfo(match_ids_array);
     res.status(200).send(results);
   } catch (error) {
     next(error);
@@ -59,7 +65,11 @@ router.use(async function (req, res, next) {
     }
     const user_id = req.session.user_id;
     const match_Id_from_body = req.body.match_id;
-    const num_of_error = await users_domain.markFavorites(user_id, match_Id_from_body);
+
+    //get all future matches ids
+    const future_match_id_from_table = await matches_domain.getFutureMatchesIDs();
+
+    const num_of_error = await users_domain.markFavorites(user_id, match_Id_from_body,future_match_id_from_table);
     if(num_of_error== 0){
       throw{status:400,message:"match id is not a future match id or is invalid"};
     }

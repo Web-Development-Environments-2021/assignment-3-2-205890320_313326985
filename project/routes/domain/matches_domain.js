@@ -5,7 +5,7 @@ async function getPastMatchesForStageMatches(){
     const oldMatches = await getPastMatches();
     // for each old match object
     // add if it has more than 2 event-logs
-    const relevantMatchIDs=await getPastMatchesWithThreeEventsOrMore();
+    const relevantMatchIDs=await getIDsOfMatchesWithThreeEventsOrMore();
     for(var i=0; i< oldMatches.length; i++){
       // remove non-relevant objects
       if(!(relevantMatchIDs.includes(oldMatches[i].match_id))){
@@ -172,10 +172,10 @@ async function getEventsOfPastMatch(match_id){
   );
 }
 
-// get from list of match ids matches with their info, to stage matches page
-async function getPastMatchesWithThreeEventsOrMore(){
+// get event matches with their info, to stage matches page
+async function getIDsOfMatchesWithThreeEventsOrMore(){
   return await DButils.execQuery(
-    `select *
+    `select match_id
      from dbo.Events
      where event_id in(
      select match_id
@@ -224,6 +224,6 @@ exports.getPastMatches=getPastMatches;
 exports.getPastMatchWithoutResult=getPastMatchWithoutResult;
 exports.nextMatchPlanned=nextMatchPlanned;
 exports.getEventsOfPastMatch = getEventsOfPastMatch;
-exports.getPastMatchesWithThreeEventsOrMore = getPastMatchesWithThreeEventsOrMore;
+exports.getIDsOfMatchesWithThreeEventsOrMore = getIDsOfMatchesWithThreeEventsOrMore;
 exports.getMatchesInfo=getMatchesInfo;
 exports.getFutureMatchesIDs=getFutureMatchesIDs;
