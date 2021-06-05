@@ -1,19 +1,15 @@
 var express = require("express");
 var router = express.Router();
-const DButils = require("../routes/utils/DButils");
-const league_utils = require("./utils/league_utils");
+const matches_domain = require("./domain/matches_domain");
+const league_domain = require("./domain/league_domain");
 
 router.get("/getDetails", async (req, res, next) => {
   try {
-    //------------------------left------------------------------// 
-    const league_details = await league_utils.getLeagueDetails();
+    const league_details = await league_domain.getLeagueDetails();
 
     // next match planned
-    const next_match = await DButils.execQuery(
-      "SELECT TOP 1 * FROM dbo.Matches WHERE date_time > GETDATE() ORDER BY date_time ASC"
-    );
-
-    league_details.next_match_planned = next_match[0];
+    const next_match = await matches_domain.nextMatchPlanned();
+    league_details.next_match_planned = next_match;
 
 
     res.send(league_details);
