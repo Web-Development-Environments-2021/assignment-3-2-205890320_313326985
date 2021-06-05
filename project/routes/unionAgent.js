@@ -1,6 +1,5 @@
 var express = require("express");
 var router = express.Router();
-const DButils = require("./utils/DButils");
 const teams_domain = require("./domain/teams_domain");
 const league_domain = require("./domain/league_domain");
 const matches_domain = require("./domain/matches_domain");
@@ -31,6 +30,10 @@ router.get("", async (req, res, next) => {
     const matches = await matches_domain.sortMatches(req.query.sort)
     if( matches == false){
       throw { status: 400, message: "Wrong sort type" };
+    }
+
+    if( matches.length == 0){
+      throw { status: 204, message: "No Content" };
     }
 
     res.send(matches);  
@@ -86,6 +89,10 @@ router.get("/addMatch", async (req, res, next) =>{
     const venues = await league_domain.getAllRelevantVenues();
     const referees = await league_domain.getAllRelevantReferees();
 
+    if(teams.length == 0 && venues.length == 0 && referees.length == 0){
+      throw { status: 204, message: "No Content" };
+    }
+
     res.send({"teams":teams, "venues":venues, "referees":referees });
   }catch (error) {
     next(error);
@@ -132,6 +139,10 @@ router.get("/UpdateRefereeMatch", async (req, res, next) =>{
     const pastMatches = await matches_domain.getPastMatches();
     const referees = await league_domain.getAllRelevantReferees();
 
+    if(futureMatches.length == 0 && pastMatches.length == 0 && referees.length == 0){
+      throw { status: 204, message: "No Content" };
+    }
+
     res.send({"futurematches":futureMatches, "pastmatches":pastMatches, "referees":referees });
 
   }catch (error) {
@@ -145,29 +156,46 @@ router.get("/UpdateRefereeMatch", async (req, res, next) =>{
 router.post("/addEventsLog", async (req, res, next) => {
   try {
     var incorect_value = "";
+    const eventTypes = ['Goal', 'Red Card', 'Yellow Card', 'Injury', 'Subsitute','None']
     const match_id = parseInt(req.query.match_id);
     const eventLogs = req.body;
 
-    if (!matches_domain.validMatch(match_id)){
+    // check valid match id
+
+    if (!matches_domain.matchInPastMatches(match_id)){
       incorect_value += " match"
     }
     for(var i = 0 ; i < eventLogs.length; i++){
-      // check if valid date
+      var date_time = eventLogs[i].date_and_time_happend;
+      var minute = eventLogs[i].minute;
+      var type = eventLogs[i].type;
+      var description = eventLogs[i].description;
 
-      // check valid minute
+      // check if valid date and minute
+      if(!await matches_domain.validDateEvent(match_id, date_time, minute)){
+        incorect_value += " event " + i.toString() + " date/minute";
+        break;
+      }
 
       // check type event
+      if(!eventTypes.includes(type)){
+        incorect_value += " event " + i.toString() + " type";
+        break;
+      }
 
-      
-      await DButils.execQuery(
-        `INSERT INTO dbo.Events (match_id,date_and_time_happend,minute,type) VALUES ('${match_id}', '${eventLogs[i].date_and_time_happend}', '${eventLogs[i].minute}', '${eventLogs[i].type}')`
-      );
+      // check if description added
+      if(description.length == 0){
+        incorect_value += " event " + i.toString() + " description";
+        break;
+      }
     }
+
     
     if (incorect_value.length != 0){
       throw { status: 400, message: "Bad request:" + incorect_value };
     }  
 
+    matches_domain.insertEventsLogDB(match_id, eventLogs);
       
     res.status(201).send("successful operation");
   } catch (error) {
@@ -179,6 +207,10 @@ router.post("/addEventsLog", async (req, res, next) => {
 router.get("/addEventsLog", async (req, res, next) => {
   try {
     const matches = await matches_domain.getPastMatches();
+
+    if(matches.length == 0){
+      throw { status: 204, message: "No Content" };
+    }
 
     res.send(matches);  
   } catch (error) {
@@ -216,6 +248,10 @@ router.put("/UpdateResultsMatch", async (req, res, next) => {
 router.get("/UpdateResultsMatch", async (req, res, next) => {
   try {
     const matches = await matches_domain.getPastMatchWithoutResult()
+
+    if(matches.length == 0){
+      throw { status: 204, message: "No Content" };
+    }
 
     res.send(matches);  
   } catch (error) {

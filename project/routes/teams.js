@@ -24,10 +24,10 @@ const matches_domain = require("../routes/domain/matches_domain");
 
 router.get("/teamFullDetails/:teamId", async (req, res, next) => {
   try {
-    const team_id = req.params.teamId;
+    const team_id = parseInt(req.params.teamId);
 
     // chech if valid team ID
-    if (!await teams_domain.validTeamID()){
+    if (!await teams_domain.validTeamID(team_id)){
       throw { status: 400, message: "Bad request: team" };
     }
 
@@ -54,8 +54,19 @@ router.get("/teamFullDetails/:teamId", async (req, res, next) => {
       return match.local_team_id == team_id || match.visitor_team_id == team_id
     })
 
-    team_details["team's past matches"]=pastMatches;
+    var pastMatchesWithEvent = []
+    for(var i=0 ; i < pastMatches.length ; i++){
+      var match = pastMatches[i];
+      var events = await matches_domain.getEventsMatch(match.match_id);
+      pastMatchesWithEvent.push({"details": match, "events": events});
+    }
+
+    team_details["team's past matches"]=pastMatchesWithEvent;
     team_details["team's future matches"]=futureMatches;
+
+    if (team_details.length == 0){
+      throw { status: 400, message: "No Content" };
+    }
 
     
     res.send(team_details);

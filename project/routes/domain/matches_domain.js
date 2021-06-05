@@ -18,19 +18,59 @@ function validDate(date){
     if(matches == null){
       isDate = false;
     }
-    else if(isNaN(date_time) || date_time <= currentdate){
+    else if(isNaN(date_time) || date <= currentdate){
       isDate = false;
     }
     else{
       isDate = true;
     }
     return isDate;
+}
+
+
+async function matchInPastMatches(match_id){
+  const pastMatches = await getPastMatches();
+
+  if(pastMatches.find((x) => x.match_id === match_id)){
+    return true;
+  }
+  else{
+    return false;
   }
 
-  function formatDateTime(date_time){
-    var datetime = new Date(date_time).toISOString().slice(0,19).replace('T', ' ');
-    return datetime;
+}
+
+async function validDateEvent(match_id, date_time, minute){
+
+  var dateTime_match = await DButils.execQuery(
+    `SELECT date_time FROM dbo.Matches WHERE match_id = '${match_id}'`
+  );
+  dateTime_match = formatDateTime(dateTime_match[0].date_time);
+  var match_date = dateTime_match.split(" ")[0];
+  var event_date = date_time.split(" ")[0];
+
+  if(match_date != event_date || minute < 0 || minute > 130){
+    return false
   }
+  else{
+    var diffMs = (Date.parse(date_time) - Date.parse(dateTime_match));
+    var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000);
+
+    if(diffMins < 0 || diffMins > 130 || diffMins != minute){
+      return false;
+    }
+    else{
+      return true;
+    }
+
+
+  }
+}
+
+function formatDateTime(date_time){
+  var datetime = new Date(date_time).toISOString().slice(0,19).replace('T', ' ');
+  return datetime;
+}
 
 
 
@@ -154,10 +194,29 @@ async function nextMatchPlanned(){
     return next_match[0];
 }
 
+async function insertEventsLogDB(match_id, eventLogs){
+  for(var i=0 ; i < eventLogs.length ; i++){
+    var minute = parseInt(eventLogs[i].minute)
+    await DButils.execQuery(
+      `INSERT INTO dbo.Events (match_id,date_and_time_happend,minute,type,description) VALUES ('${match_id}', '${eventLogs[i].date_and_time_happend}', '${minute}', '${eventLogs[i].type}', '${eventLogs[i].description}')`
+    );
+  }
+}
+
+async function getEventsMatch(match_id){
+  var events = await DButils.execQuery(
+    `select * from dbo.Events where match_id = '${match_id}'`
+  );
+
+  return events;
+}
+
 
 
 
 exports.validDate = validDate;
+exports.matchInPastMatches=matchInPastMatches;
+exports.validDateEvent=validDateEvent;
 exports.formatDateTime = formatDateTime;
 exports.validResults = validResults;
 exports.sortMatches = sortMatches;
@@ -171,5 +230,7 @@ exports.getPastMatchesForStageMatches = getPastMatchesForStageMatches;
 exports.getPastMatches=getPastMatches;
 exports.getPastMatchWithoutResult=getPastMatchWithoutResult;
 exports.nextMatchPlanned=nextMatchPlanned;
+exports.insertEventsLogDB=insertEventsLogDB;
+exports.getEventsMatch=getEventsMatch;
 
   

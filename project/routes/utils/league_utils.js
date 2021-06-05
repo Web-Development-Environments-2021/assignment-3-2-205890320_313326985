@@ -1,64 +1,58 @@
 const axios = require("axios");
 const api_domain = "https://soccer.sportmonks.com/api/v2.0";
 const LEAGUE_ID = 271;
-const SEASON_ID = 18334;
+// const SEASON_ID = 18334;
 
-async function getLeagueDetails() {
-  const league = await axios.get(
-    `https://soccer.sportmonks.com/api/v2.0/leagues/${LEAGUE_ID}`,
-    {
+// async function getLeagueDetails() {
+//   const league = await axios.get(
+//     `https://soccer.sportmonks.com/api/v2.0/leagues/${LEAGUE_ID}`,
+//     {
+//       params: {
+//         include: "season",
+//         api_token: process.env.api_token,
+//       },
+//     }
+//   );
+//   const ListOfStages = await axios.get(
+//     `https://soccer.sportmonks.com/api/v2.0/stages/season/${SEASON_ID}`,
+//     {
+//       params: {
+//         api_token: process.env.api_token
+//       },
+//     }
+//   );
+//   // return back elevant data
+//   return {
+//         league_name: league.data.data.name,
+//         current_season_name: league.data.data.season.data.name,
+//         current_stage_name: ListOfStages.data.data[0].name,
+//       };
+
+async function getLeagueDetails(){
+  if( league.data.data.current_stage_id != null){
+    const stage = await axios.get(
+    `https://soccer.sportmonks.com/api/v2.0/stages/${league.data.data.current_stage_id}`,
+      {
       params: {
-        include: "season",
         api_token: process.env.api_token,
-      },
-    }
-  );
-  const ListOfStages = await axios.get(
-    `https://soccer.sportmonks.com/api/v2.0/stages/season/${SEASON_ID}`,
-    {
-      params: {
-        api_token: process.env.api_token
-      },
-    }
-  );
-  // return back elevant data
-  return {
-        league_name: league.data.data.name,
-        current_season_name: league.data.data.season.data.name,
-        current_stage_name: ListOfStages.data.data[0].name,
-      };
-
-
-
-  /*
-  LIAD PUT IN COMMENT SO TRY TO PUT SHIR'S IDEA
-  */
-  // if( league.data.data.current_stage_id != null){
-  //   const stage = await axios.get(
-  //   `https://soccer.sportmonks.com/api/v2.0/stages/${league.data.data.current_stage_id}`,
-  //     {
-  //     params: {
-  //       api_token: process.env.api_token,
-  //       },
-  //     }
-  //   );
+        },
+      }
+    );
   
-  //   return {
-  //     league_name: league.data.data.name,
-  //     current_season_name: league.data.data.season.data.name,
-  //     current_stage_name: stage.data.data.name,
-  //   };
-  // }
-  // else{
-  //   return {
-  //     league_name: league.data.data.name,
-  //     current_season_name: league.data.data.season.data.name,
-  //     current_stage_name: null,
-  //   }
+    return {
+      league_name: league.data.data.name,
+      current_season_name: league.data.data.season.data.name,
+      current_stage_name: stage.data.data.name,
+    };
+  }
+  else{
+    return {
+      league_name: league.data.data.name,
+      current_season_name: league.data.data.season.data.name,
+      current_stage_name: null,
+    }
     
-  // }
-
-
+  }
 
     // next game details should come from DB
 }

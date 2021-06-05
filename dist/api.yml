@@ -135,6 +135,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Team"
+        "204":
+          description: No Content
         "400":
           description: Bad request
   /players/playerFullDetails/{playerId}:
@@ -189,6 +191,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/MatchPreview'
+        "204":
+          description: No Content
         "401":
           description: "You have not authenticated yet, please sign in"
         "400":
@@ -245,6 +249,8 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Referee'
+        "204":
+          description: No Content
         "401":
           description: You have not authenticated yet, please sign in
         "400":
@@ -293,6 +299,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/MatchPreview'
+        "204":
+          description: No Content
         "401":
           description: You have not authenticated yet, please sign in
         "400":
@@ -329,6 +337,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/FutureMatchPreview'
+        "204":
+          description: No Content
         "401":
           description: You have not authenticated yet, please sign in
         "400":
@@ -393,6 +403,8 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Referee'
+        "204":
+          description: No Content
         "401":
           description: You have not authenticated yet, please sign in
         "400":
@@ -779,11 +791,20 @@ components:
         team's past matches:
           type: array
           items:
-            $ref: '#/components/schemas/MatchPreview'
+            type: object
+            properties:
+              details:
+                $ref: '#/components/schemas/MatchPreview'
+              events:
+                type: array
+                items:
+                  type: object
+                  $ref: "#/components/schemas/Event"
         team's future matches:
           type: array
           items:
             $ref: '#/components/schemas/FutureMatchPreview'
+        
     Event:
       type: object
       properties:
