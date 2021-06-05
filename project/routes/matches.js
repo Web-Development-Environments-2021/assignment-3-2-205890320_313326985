@@ -8,7 +8,6 @@ const matches_domain = require("./domain/matches_domain");
  * Authenticate all incoming requests by middleware
  */
 
-/// WHY THIS IS HERE? 
 // router.use(async function (req, res, next) {
 //   if (req.session && req.session.user_id) {
 //     DButils.execQuery("SELECT user_id FROM dbo.Users")

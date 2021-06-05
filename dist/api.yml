@@ -342,7 +342,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MatchPreview'
+              $ref: '#/components/schemas/FutureMatchPreview'
         required: true
       responses:
         "201":
@@ -736,29 +736,29 @@ components:
       properties:
         match_id:
           type: integer
-          example: 53
+          example: 5
         date_time:
           type: string
           format: date-time
-          example: "2021-08-02 15:30:00"
+          example: "2021-06-05 16:20:00"
         local_team_id:
           type: integer
-          example: 53
+          example: 1789
         local_team_name:
           type: string
-          example: "Celtic"
+          example: "OB"
         visitor_team_id:
           type: integer
-          example: 338
+          example: 86
         visitor_team_name:
           type: string
-          example: "Hamilton Academical"
+          example: "Silkeborg"
         venue_id:
           type: integer
-          example: 8909
+          example: 5655
         venue_name:
           type: string
-          example: "Celtic Park" 
+          example: "Parken" 
     Team:
       type: object
       properties:

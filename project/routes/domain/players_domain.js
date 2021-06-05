@@ -1,4 +1,7 @@
 const player_utils = require("../utils/players_utils");
+const league_utils = require("../utils/league_utils");
+// get current season
+const current_season_id = league_utils.getCurrentSeasonID();
 
 // get from data we have got from http req' the relevant to response
 function extractRelevantPlayerData(players_info) {
@@ -19,8 +22,10 @@ function extractRelevantPlayerData(players_info) {
 async function extractPersonalPagePlayerData(player_id) {
 
     const player_info = (await player_utils.getPlayerById(player_id)).data.data;
+    // // get current season
+    // const current_season_id = league_utils.getCurrentSeasonID();
 
-    if(player_info.team.data.current_season_id != 17328){
+    if(player_info.team.data.current_season_id != current_season_id){
       return 0;
     }
     const {fullname,image_path,position_id,common_name,nationality,birthdate,birthcountry,height,weight} = player_info;
@@ -70,7 +75,7 @@ async function searchForPlayersInOurSeason(player_name_to_search){
         }
       }
     }
-    if (players_list[i].team.data.current_season_id == 17328){
+    if (players_list[i].team.data.current_season_id == current_season_id){
       players_list_filtered_by_season.push(players_list[i]);
     }
   }
@@ -149,7 +154,6 @@ async function sortPlayers(sort_way,players_list_filtered_by_season_filterquery_
   else{
     throw{status: 400, message:"wrong way to sort"}
   }
-  // return players_list_filtered_by_season_filterquery_sorted_by_name;
 }
 
 

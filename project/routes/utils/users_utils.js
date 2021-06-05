@@ -40,17 +40,50 @@ async function getFavoriteMatches(user_id){
 }
 
 async function removeOldMatchesFromFavorites(){
+  // await DButils.execQuery(
+  //   `DELETE
+  //   from dbo.FavoriteMatches
+  //   where match_id
+  //   in(
+  //     select match_id
+  //     from dbo.Matches
+  //     where date_time < GETDATE()
+  //   )`
+  // );
+
+  var currentdate = new Date();
+  // get all of the old matches
+  var oldMatches = await DButils.execQuery(
+    `select match_id,date_time
+    from dbo.Matches`
+  );
+  // format date_time
+  oldMatches.forEach(function(match, i) {
+    match.date_time = formatDateTime(match.date_time)
+    
+  })
+  // filter date_time by past to current date
+  oldMatches = oldMatches.filter(function(match){
+    return Date.parse(match.date_time) <= Date.parse(currentdate);
+  })
+  // get all relevant oldmatches id's
+  let oldMatchesIDs = [];
+  oldMatchesIDs.map((oldMatch) =>
+    promises.push(oldMatch.match_id)
+  );
+  await Promise.all(oldMatchesIDs);
+  // delete old matches from favorite
   await DButils.execQuery(
     `DELETE
     from dbo.FavoriteMatches
     where match_id
     in(
-      select match_id
-      from dbo.Matches
-      where date_time < GETDATE()
+      ${oldMatchesIDs}
     )`
   );
 }
+
+
 
 
 

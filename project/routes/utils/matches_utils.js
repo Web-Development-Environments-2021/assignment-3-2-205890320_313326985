@@ -1,9 +1,5 @@
-const axios = require("axios");
-const e = require("express");
-const api_domain = "https://soccer.sportmonks.com/api/v2.0";
 const DButils = require("./DButils");
 const matches_domain = require("../domain/matches_domain");
-//const SEASON_ID = 17328;
 
 //----------------------------------------------//
 // TODO : check why dont work
