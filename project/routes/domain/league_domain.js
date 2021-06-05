@@ -23,11 +23,11 @@ async function validVenue(venue){
     const referees = await DButils.execQuery(
       "SELECT referee_id FROM dbo.Referees"
     );
-    if (referees.find((x) => x.referee_id === referee) == null){
-      false;
+    if (referees.find((x) => x.referee_id === referee)){
+      return true;
     }
     else{
-      true;
+      return false;
     }
   
   }

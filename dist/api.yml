@@ -311,12 +311,37 @@ paths:
       tags:
       - UnionAgent
       summary: Update match results in past match to system
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/MatchPreview'
+      parameters:
+      - name: match_id
+        in: query
+        description: ID of past match without results
         required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int64
+        example: 16475
+      - name: home_goals
+        in: query
+        description: Number of home team goals
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int64
+        example: 1
+      - name: away_goals
+        in: query
+        description: Number of away team goals
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int64
+        example: 3
       responses:
         "201":
           description: successful operation

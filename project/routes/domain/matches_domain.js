@@ -53,8 +53,8 @@ async function validDateEvent(match_id, date_time, minute){
     return false
   }
   else{
-    var diffMs = (Date.parse(date_time) - Date.parse(dateTime_match));
-    var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000);
+    var diffMs = Math.abs((Date.parse(date_time) - Date.parse(dateTime_match)))/1000;
+    var diffMins = Math.floor(diffMs / 60);
 
     if(diffMins < 0 || diffMins > 130 || diffMins != minute){
       return false;
@@ -91,21 +91,21 @@ async function sortMatches(sortType){
     );
     
     // sort by match id
-    if (sort == 'none'){
+    if (sortType == 'none'){
       matches.sort((a,b) => a.match_id - b.match_id);
     }
 
-    // sort by date time descending 
-    else if (sort == 'Date'){
-      matches.sort((a,b) => b.date_time - a.date_time);
+    // sort by date time ascending 
+    else if (sortType == 'Date'){
+      matches.sort((a,b) => a.date_time - b.date_time);
     }
 
     // sort by local tam id ascending
-    else if (sort == 'Teams'){
+    else if (sortType == 'Teams'){
       matches.sort((a,b) => ((a.local_team_name).localeCompare(b.local_team_name)));
     }
     else{
-        return false;
+        return null;
     }
     return matches;
 }
@@ -187,6 +187,18 @@ async function getPastMatchWithoutResult(){
     return MatchesWithoutResults;
 }
 
+async function validMatchWithoutResults(match_id){
+  const MatchesWithoutResults = await getPastMatchWithoutResult();
+
+  if(MatchesWithoutResults.find((x) => x.match_id === match_id)){
+    return true;
+  }
+  else{
+    return false;
+  }
+
+}
+
 async function nextMatchPlanned(){
     var futureMatches = await getFutureMatches();
     next_match = futureMatches.sort((a,b) => a.date_time - b.date_time);
@@ -229,6 +241,7 @@ exports.getPastMatchWithoutResult=getPastMatchWithoutResult
 exports.getPastMatchesForStageMatches = getPastMatchesForStageMatches;
 exports.getPastMatches=getPastMatches;
 exports.getPastMatchWithoutResult=getPastMatchWithoutResult;
+exports.validMatchWithoutResults=validMatchWithoutResults;
 exports.nextMatchPlanned=nextMatchPlanned;
 exports.insertEventsLogDB=insertEventsLogDB;
 exports.getEventsMatch=getEventsMatch;
