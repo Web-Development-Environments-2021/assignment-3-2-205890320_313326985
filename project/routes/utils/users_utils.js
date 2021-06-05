@@ -1,14 +1,22 @@
 const DButils = require("./DButils");
 const matches_utils = require("./matches_utils");
+const matches_domain = require("../domain/matches_domain");
 
 // help function to add new favorite match
 async function markMatchAsFavorite(user_id, match_id) {
     const future_match_id_from_table = await matches_utils.getFutureMatchesIDs();
     // if requested match is a future match
-    if(match_id in future_match_id_from_table){
-      await DButils.execQuery(
-        `insert into dbo.FavoriteMatches values ('${user_id}','${match_id}')`
-        );
+
+    if(future_match_id_from_table.includes(match_id)){
+      const favoriteMatchIDs = await getFavoriteMatches(user_id);
+      if((await favoriteMatchIDs).includes(match_id)){
+        return -1;
+      }
+      else{
+        await DButils.execQuery(
+          `insert into dbo.FavoriteMatches values ('${user_id}','${match_id}')`
+          );
+      }
     }
     else{
       return 0;
@@ -36,7 +44,7 @@ async function getFavoriteMatches(user_id){
       from dbo.FavoriteMatches
       where user_id='${user_id}'`
     );
-  return match_ids;
+  return match_ids; 
 }
 
 async function removeOldMatchesFromFavorites(){
@@ -59,8 +67,7 @@ async function removeOldMatchesFromFavorites(){
   );
   // format date_time
   oldMatches.forEach(function(match, i) {
-    match.date_time = formatDateTime(match.date_time)
-    
+    match.date_time = matches_domain.formatDateTime(match.date_time)
   })
   // filter date_time by past to current date
   oldMatches = oldMatches.filter(function(match){
@@ -68,19 +75,19 @@ async function removeOldMatchesFromFavorites(){
   })
   // get all relevant oldmatches id's
   let oldMatchesIDs = [];
-  oldMatchesIDs.map((oldMatch) =>
-    promises.push(oldMatch.match_id)
+  oldMatches.map((oldMatch) =>
+  oldMatchesIDs.push(oldMatch.match_id)
   );
   await Promise.all(oldMatchesIDs);
   // delete old matches from favorite
-  await DButils.execQuery(
-    `DELETE
-    from dbo.FavoriteMatches
-    where match_id
-    in(
-      ${oldMatchesIDs}
-    )`
-  );
+  for(var i=0; i<oldMatchesIDs.length; i++ ){
+    await DButils.execQuery(
+      `DELETE
+      from dbo.FavoriteMatches
+      where match_id = '${oldMatchesIDs[i]}'`
+    );
+  }
+  
 }
 
 

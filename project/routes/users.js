@@ -29,7 +29,7 @@ router.use(async function (req, res, next) {
   try {
     const amountOfParams = Object.keys(req.query).length;
     // sanity check
-     if (req.body != undefined || amountOfParams > 0 ){
+     if (req.body.length != undefined || amountOfParams > 0 ){
       throw{status: 400, message: "Not suppose to have any params or body"};
     }
     const user_id = req.session.user_id;
@@ -62,6 +62,9 @@ router.use(async function (req, res, next) {
     const num_of_error = await users_domain.markFavorites(user_id, match_Id_from_body);
     if(num_of_error== 0){
       throw{status:400,message:"match id is not a future match id or is invalid"};
+    }
+    else if(num_of_error == -1){
+      throw{status:400,message:"match id already inside favorites"};
     }
     else{
       res.status(201).send("The match successfully saved to the favorites");
