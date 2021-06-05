@@ -17,47 +17,12 @@ const matches_domain = require("../domain/matches_domain");
 //   return matches_ids_list
 // }
 
-async function getFutureMatchesIDs(){
-  const futureMatches = await matches_domain.getFutureMatches();
-  let promises = [];
-  futureMatches.map((futurematch) =>
-    promises.push(futurematch.match_id)
-  );
-  return await Promise.all(promises);
-}
 
-async function getMatchesInfo(matches_ids_list) {
-  let promises = [];
-  matches_ids_list.map((id) =>
-    promises.push(
-        DButils.execQuery(
-            `select match_id,date_time,local_team_id,visitor_team_id,venue_id 
-            from dbo.Matches 
-            where match_id='${id}'`
-        )
-    )
-  );
-  return await Promise.all(promises);
-}
 //----------------------------------------------//
 
 
 
-// get from list of match ids matches with their info, to stage matches page
-async function getPastMatchesWithInfoByIDsAndEvents(){
-  const pastmatches = await DButils.execQuery(
-    `select * 
-    from dbo.Matches 
-    where date_time < GETDATE() and match_id 
-    in(
-      select match_id 
-      from dbo.Events 
-      group by match_id 
-      having count(event_id)>2 
-    )`
-  );
-  return pastmatches;
-}
+
 
 
 //----------------------------------------------//
@@ -65,6 +30,5 @@ async function getPastMatchesWithInfoByIDsAndEvents(){
 exports.getMatchesInfo = getMatchesInfo;
 //----------------------------------------------//
 exports.getFutureMatchesIDs=getFutureMatchesIDs;
-exports.getPastMatchesWithInfoByIDsAndEvents = getPastMatchesWithInfoByIDsAndEvents;
 
 

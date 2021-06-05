@@ -529,7 +529,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/MatchPreview'
+                  $ref: '#/components/schemas/PastMatchWithEvents'
         "204":
           description: There is no content to send for this request
         "401":
@@ -828,5 +828,12 @@ components:
         course:
           type: string
           example: Regular
-
-      
+    PastMatchWithEvents:
+      type: object
+      properties:
+        MatchDetails:
+          $ref: '#/components/schemas/MatchPreview'
+        MatchEvents:
+          type: array
+          items:
+            $ref: '#/components/schemas/Event'

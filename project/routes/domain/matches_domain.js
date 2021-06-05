@@ -2,12 +2,22 @@ const DButils = require("../utils/DButils");
 const matches_utils = require("../utils/matches_utils");
 
 async function getPastMatchesForStageMatches(){
-    return await matches_utils.getPastMatchesWithInfoByIDsAndEvents();
+    const oldMatches = await getPastMatches();
+    // for each old match object
+    // add if it has more than 2 event-logs
+    const relevantMatchIDs=await getPastMatchesWithThreeEventsOrMore();
+    for(var i=0; i< oldMatches.length; i++){
+      // remove non-relevant objects
+      if(!(relevantMatchIDs.includes(oldMatches[i].match_id))){
+        oldMatches.splice(i,1);
+      }
+      // add events to relevant objects
+      else{
+        oldMatches[i].events=getEventsOfPastMatch(oldMatches[i].match_id);
+      }
+    }
+    return oldMatches;
 }
-
-// async function getFutureMatchesForStageMatches(){
-//     return await matches_utils.getFutureMatches();
-// }
 
 function validDate(date){
     var isDate;
@@ -154,8 +164,50 @@ async function nextMatchPlanned(){
     return next_match[0];
 }
 
+async function getEventsOfPastMatch(match_id){
+  return await DButils.execQuery(
+    `select * 
+     from dbo.Events 
+     where match_id = ${match_id}`
+  );
+}
 
+// get from list of match ids matches with their info, to stage matches page
+async function getPastMatchesWithThreeEventsOrMore(){
+  return await DButils.execQuery(
+    `select *
+     from dbo.Events
+     where event_id in(
+     select match_id
+     from dbo.Events 
+     group by match_id 
+     having count(event_id)>2
+     )`
+  );
+}
 
+async function getMatchesInfo(matches_ids_list) {
+  let promises = [];
+  matches_ids_list.map((id) =>
+    promises.push(
+        DButils.execQuery(
+            `select match_id,date_time,local_team_id,visitor_team_id,venue_id 
+            from dbo.Matches 
+            where match_id='${id}'`
+        )
+    )
+  );
+  return await Promise.all(promises);
+}
+
+async function getFutureMatchesIDs(){
+  const futureMatches = await getFutureMatches();
+  let promises = [];
+  futureMatches.map((futurematch) =>
+    promises.push(futurematch.match_id)
+  );
+  return await Promise.all(promises);
+}
 
 exports.validDate = validDate;
 exports.formatDateTime = formatDateTime;
@@ -171,5 +223,7 @@ exports.getPastMatchesForStageMatches = getPastMatchesForStageMatches;
 exports.getPastMatches=getPastMatches;
 exports.getPastMatchWithoutResult=getPastMatchWithoutResult;
 exports.nextMatchPlanned=nextMatchPlanned;
-
-  
+exports.getEventsOfPastMatch = getEventsOfPastMatch;
+exports.getPastMatchesWithThreeEventsOrMore = getPastMatchesWithThreeEventsOrMore;
+exports.getMatchesInfo=getMatchesInfo;
+exports.getFutureMatchesIDs=getFutureMatchesIDs;

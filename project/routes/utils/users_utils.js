@@ -48,17 +48,6 @@ async function getFavoriteMatches(user_id){
 }
 
 async function removeOldMatchesFromFavorites(){
-  // await DButils.execQuery(
-  //   `DELETE
-  //   from dbo.FavoriteMatches
-  //   where match_id
-  //   in(
-  //     select match_id
-  //     from dbo.Matches
-  //     where date_time < GETDATE()
-  //   )`
-  // );
-
   var currentdate = new Date();
   // get all of the old matches
   var oldMatches = await DButils.execQuery(
