@@ -758,7 +758,10 @@ components:
           example: 5655
         venue_name:
           type: string
-          example: "Parken" 
+          example: "Parken"
+        referee_id:
+          type: integer
+          example: 89
     Team:
       type: object
       properties:
