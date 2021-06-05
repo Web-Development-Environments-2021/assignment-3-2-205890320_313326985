@@ -18,21 +18,21 @@ async function SortTeams(team_list_filtered_by_season_sorted_by_name,sort_way){
     // sort by team name, ascending
     if(sort_way == "asc"){
       team_list_filtered_by_season_sorted_by_name.sort((a,b) => ((a.name).localeCompare(b.name)));
-      return team_list_filtered_by_season_sorted_by_name;
+      // return team_list_filtered_by_season_sorted_by_name;
     }
     // sort by team name, descending
     else if(sort_way == "desc"){
       team_list_filtered_by_season_sorted_by_name.sort((a,b) => ((b.name).localeCompare(a.name)));
-      return team_list_filtered_by_season_sorted_by_name;
+      // return team_list_filtered_by_season_sorted_by_name;
     }
     // if query is only letters, but invalid
     else if(sort_way != "none"){
-      throw{status: 400, message:"wrong way to sort"};
+      return -2;
     }
   }
   // wrong parameter, send status fail
   else{
-    throw{status: 400, message: "invalid sort search"};
+    return -1;
   }
 }
 
@@ -46,7 +46,7 @@ async function searchForTeamsInOurSeason(team_name_to_search){
     }
   }
   if(team_list_filtered_by_season.length == 0){
-    throw{status: 204, message: "There is no content to send for this request"};
+    return 0;
   }
   return team_list_filtered_by_season;
 }

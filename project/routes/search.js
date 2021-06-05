@@ -1,3 +1,4 @@
+const e = require("express");
 var express = require("express");
 var router = express.Router();
 const player_domain = require("../routes/domain/players_domain");
@@ -20,13 +21,21 @@ router.get("/Teams", async (req, res, next) => {
     }
 
     const team_list_filtered_by_season = await team_domain.searchForTeamsInOurSeason(team_name_to_search);
-    
+    // if its int, indicates error need to throw
+    if(team_list_filtered_by_season == 0){
+      throw{status: 204, message: "There is no content to send for this request"};
+    }
     /**
      * Sort
      */
     var team_list_filtered_by_season_sorted_by_name = team_list_filtered_by_season;
-    await team_domain.SortTeams(team_list_filtered_by_season_sorted_by_name,sort_way);
-    
+    const numForError = await team_domain.SortTeams(team_list_filtered_by_season_sorted_by_name,sort_way);
+    if(numForError == -1){
+      throw{status: 400, message: "invalid sort search"};
+    }
+    else if(numForError == -2){
+      throw{status: 400, message:"wrong way to sort"};
+    }
     const results = await team_domain.extractRelevantTeamData(team_list_filtered_by_season_sorted_by_name);
     res.status(200).send(results);
   }
@@ -57,12 +66,24 @@ router.get("/Players", async (req, res, next) => {
     // get from API all of the players
     // then get players that are in our season
     const players_list_filtered_by_season = await player_domain.searchForPlayersInOurSeason(player_name_to_search);
-
+    if(players_list_filtered_by_season == 0){
+      throw{status: 204, message: "There is no content to send for this request"};
+    }
     /**
      * Filter
      */
     var players_list_filtered_by_season_filterquery = await player_domain.filterPlayers(filter_way,query_to_filter_players,players_list_filtered_by_season);
-
+    if(players_list_filtered_by_season_filterquery == -1 ||
+      players_list_filtered_by_season_filterquery == -2
+      ){
+      throw{status: 400, message: "missing parameters"};
+    }
+    else if(players_list_filtered_by_season_filterquery == -3){
+      throw{status: 400, message:"wrong way to filter"}
+    }
+    else if(players_list_filtered_by_season_filterquery == -4){
+      throw{status: 204, message: "There is no content to send for this request"};
+    }
     /**
      * Sort
      */

@@ -81,7 +81,7 @@ async function searchForPlayersInOurSeason(player_name_to_search){
   }
 
   if(players_list_filtered_by_season.length == 0){
-    throw{status: 204, message: "There is no content to send for this request"};
+    return 0;
   }
   return players_list_filtered_by_season;
 }
@@ -91,7 +91,7 @@ async function filterPlayers(filter_way,query_to_filter_players,players_list_fil
   // filter by team name
   if(filter_way == "team name"){
     if(query_to_filter_players == undefined){
-      throw{status: 400, message: "missing parameters"};
+      return -1;
     }
     // check if filter query is only letters, no space
     if(/^[A-Za-z]+$/.test(query_to_filter_players)){
@@ -106,7 +106,7 @@ async function filterPlayers(filter_way,query_to_filter_players,players_list_fil
   // filter by position id
   else if(filter_way == "player's position"){
     if(query_to_filter_players == undefined){
-      throw{status: 400, message: "missing parameters"};
+      return -2;
     }
     // check if filter query is only numbers, no space
     if(/^[0-9]+$/.test(query_to_filter_players)){
@@ -124,10 +124,10 @@ async function filterPlayers(filter_way,query_to_filter_players,players_list_fil
   }
   // wrong parameter, send status fail
   else{
-    throw{status: 400, message:"wrong way to filter"}
+    return -3;
   }
   if(players_list_filtered_by_season_filterquery.length == 0){
-    throw{status: 204, message: "There is no content to send for this request"};
+    return -4;
   }
   else{
     return players_list_filtered_by_season_filterquery;
