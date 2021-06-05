@@ -1,15 +1,14 @@
 const DButils = require("./DButils");
+const matches_utils = require("./matches_utils");
 
 // help function to add new favorite match
 async function markMatchAsFavorite(user_id, match_id) {
-    const match_id_from_table = await DButils.execQuery(
-      `select match_id from dbo.Matches where match_id='${match_id}'`
-    );
-    if (match_id_from_table.length > 0){
-      // insert match to favoritematches table
+    const future_match_id_from_table = await matches_utils.getFutureMatchesIDs();
+    // if requested match is a future match
+    if(match_id in future_match_id_from_table){
       await DButils.execQuery(
-      `insert into dbo.FavoriteMatches values ('${user_id}','${match_id}')`
-      );
+        `insert into dbo.FavoriteMatches values ('${user_id}','${match_id}')`
+        );
     }
     else{
       return 0;

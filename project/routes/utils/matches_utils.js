@@ -2,6 +2,7 @@ const axios = require("axios");
 const e = require("express");
 const api_domain = "https://soccer.sportmonks.com/api/v2.0";
 const DButils = require("./DButils");
+const matches_domain = require("../domain/matches_domain");
 //const SEASON_ID = 17328;
 
 //----------------------------------------------//
@@ -20,6 +21,14 @@ const DButils = require("./DButils");
 //   return matches_ids_list
 // }
 
+async function getFutureMatchesIDs(){
+  const futureMatches = await matches_domain.getFutureMatches();
+  let promises = [];
+  futureMatches.map((futurematch) =>
+    promises.push(futurematch.match_id)
+  );
+  return await Promise.all(promises);
+}
 
 async function getMatchesInfo(matches_ids_list) {
   let promises = [];
@@ -59,7 +68,7 @@ async function getPastMatchesWithInfoByIDsAndEvents(){
 // exports.getAllMatchesID = getAllMatchesID;
 exports.getMatchesInfo = getMatchesInfo;
 //----------------------------------------------//
-
+exports.getFutureMatchesIDs=getFutureMatchesIDs;
 exports.getPastMatchesWithInfoByIDsAndEvents = getPastMatchesWithInfoByIDsAndEvents;
 
 

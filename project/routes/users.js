@@ -56,7 +56,7 @@ router.use(async function (req, res, next) {
     const match_Id_from_body = req.body.match_id;
     const num_of_error = await users_domain.markFavorites(user_id, match_Id_from_body);
     if(num_of_error== 0){
-      throw{status:400,message:"match id invalid"};
+      throw{status:400,message:"match id is not a future match id or is invalid"};
     }
     else{
       res.status(201).send("The match successfully saved to the favorites");
