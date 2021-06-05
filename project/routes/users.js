@@ -27,6 +27,11 @@ router.use(async function (req, res, next) {
  */
  router.get("/favoriteMatches", async (req, res, next) => {
   try {
+    const amountOfParams = Object.keys(req.query).length;
+    // sanity check
+     if (req.body != undefined || amountOfParams > 0 ){
+      throw{status: 400, message: "Not suppose to have any params or body"};
+    }
     const user_id = req.session.user_id;
     const match_ids = await users_domain.getFutureMatchesIDs(user_id);
     // returning 0 means error from help function
@@ -34,7 +39,7 @@ router.use(async function (req, res, next) {
       throw { status: 204, message: "This user does not have any favorite matches" };
     }
     let match_ids_array = [];
-    match_ids.map((element) => match_ids_array.push(element.match_id)); //extracting the match's ids into array
+    match_ids.map((element) => match_ids_array.push(element.match_id)); //extracting match's ids into array
     const results = await users_domain.getInfoAboutMatches(match_ids_array);
     res.status(200).send(results);
   } catch (error) {
