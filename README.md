@@ -9,6 +9,9 @@
 -   SportMonks Football API requests as business layer
 
 # We have done bonus - as route "UnionAgent"
+-   username: shaharshc
+-   password: shahar@24
+----------------------------------------------------
 -   Allowed connecting a referee to a future match
 -   Allowed adding new event log to past match's events-log
 -   Allowed updating result of a past match
