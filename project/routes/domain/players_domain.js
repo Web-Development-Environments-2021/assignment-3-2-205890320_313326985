@@ -51,7 +51,7 @@ async function getPlayersByTeam(team_id) {
 
 async function searchForPlayersInOurSeason(player_name_to_search){
   // get current season
-  const current_season_id = league_utils.getCurrentSeasonID();
+  const current_season_id = await league_utils.getCurrentSeasonID();
   const players_list = await player_utils.getPlayersByNameAndTeam(player_name_to_search);
   const players_list_filtered_by_season=[];
   // add to array only players that are in teams that are playing in SuperLiga
@@ -83,7 +83,7 @@ async function searchForPlayersInOurSeason(player_name_to_search){
 }
 
 async function filterPlayers(filter_way,query_to_filter_players,players_list_filtered_by_season){
-  const players_list_filtered_by_season_filterquery=[];
+  var players_list_filtered_by_season_filterquery=[];
   // filter by team name
   if(filter_way == "team name"){
     if(query_to_filter_players == undefined){

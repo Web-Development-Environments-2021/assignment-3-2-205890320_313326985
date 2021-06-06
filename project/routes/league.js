@@ -31,7 +31,7 @@ router.get("/getDetails", async (req, res, next) => {
       const user_id = req.user_id;
     // get favorite matches ids
       const favoriteMatches_ids = await users_domain.getFavoriteMatchesIDs(user_id);
-      favoriteMatches = await matches_domain.getMatchesInfo(favoriteMatches_ids);
+      favoriteMatches = await matches_domain.getFutureMatchesInfo(favoriteMatches_ids);
     }
 
     if(league_details.length == 0 && favoriteMatches.length == 0){
