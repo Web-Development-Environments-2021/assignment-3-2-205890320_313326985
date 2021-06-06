@@ -73,7 +73,8 @@ router.get("/Players", async (req, res, next) => {
      * Filter
      */
     var players_list_filtered_by_season_filterquery = await player_domain.filterPlayers(filter_way,query_to_filter_players,players_list_filtered_by_season);
-    if(players_list_filtered_by_season_filterquery == -1 ||
+    if(
+      players_list_filtered_by_season_filterquery == -1 ||
       players_list_filtered_by_season_filterquery == -2
       ){
       throw{status: 400, message: "missing parameters"};
@@ -88,7 +89,13 @@ router.get("/Players", async (req, res, next) => {
      * Sort
      */
     var players_list_filtered_by_season_filterquery_sorted_by_name = players_list_filtered_by_season_filterquery;
-    await player_domain.sortPlayers(sort_way,players_list_filtered_by_season_filterquery_sorted_by_name);
+    const error_indicator = await player_domain.sortPlayers(sort_way,players_list_filtered_by_season_filterquery_sorted_by_name);
+    if(error_indicator == 0){
+      throw{status: 400, message:"invalid sort search"}
+    }
+    else if(error_indicator == -1){
+      throw{status: 400, message:"wrong way to sort"}
+    }
     
     const results = await player_domain.extractRelevantPlayerData(players_list_filtered_by_season_filterquery_sorted_by_name);
 

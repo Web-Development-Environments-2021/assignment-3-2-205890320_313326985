@@ -12,7 +12,7 @@ async function getPastMatchesForStageMatches(){
       }
       // add events to relevant objects
       else{
-        oldMatches[i].events=getEventsOfPastMatch(oldMatches[i].match_id);
+        oldMatches[i].events= await getEventsOfPastMatch(oldMatches[i].match_id);
       }
     }
     return oldMatches;

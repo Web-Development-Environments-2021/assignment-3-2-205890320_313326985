@@ -147,12 +147,12 @@ async function sortPlayers(sort_way,players_list_filtered_by_season_filterquery_
     }
     // if query is only letters and space, but invalid
     else if(sort_way != "none"){
-      throw{status: 400, message:"invalid sort search"}
+      return 0;
     }
   }
   // wrong parameter, send status fail
   else{
-    throw{status: 400, message:"wrong way to sort"}
+    return -1;
   }
 }
 
