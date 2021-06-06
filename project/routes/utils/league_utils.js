@@ -35,7 +35,7 @@ async function getLeagueDetails(){
     current_stage_name: stage.data.data.name,
   };
 
-    // next game details should come from DB
+  // next game details should come from DB
 }
 
 

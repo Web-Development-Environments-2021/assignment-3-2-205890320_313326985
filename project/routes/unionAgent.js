@@ -71,7 +71,7 @@ router.post("/addMatch", async (req, res, next) => {
     }
 
     // check if referee exist 
-    if (!league_domain.validReferee(req.body.referee_id)){
+    if (!await league_domain.validReferee(req.body.referee_id)){
       incorect_value += " referee"  
     }
 
@@ -113,15 +113,29 @@ router.get("/addMatch", async (req, res, next) =>{
 router.put("/UpdateRefereeMatch", async (req, res, next) => {
   try {
     var incorect_value = ""
-    const match_id = parseInt(req.query.match_id);
-    const referee_id = parseInt(req.query.referee_id);
+    var match_id;
+    var referee_id;  
+
+    if(/^[0-9]+$/.test(req.query.match_id)){
+      match_id = parseInt(req.query.match_id);  
+    }
+    else{
+      match_id = false;
+    }
+    
+    if( /^[0-9]+$/.test(req.query.referee_id)){
+      referee_id = parseInt(req.query.referee_id);
+    }
+    else{
+      referee_id = false;
+    }
 
     // Check if the match id and referee id exist in the match table
-    if (!await matches_domain.validMatch(match_id)){
+    if (match_id == false || !await matches_domain.validMatch(match_id)){
       incorect_value += " match"
     }
 
-    if (!await league_domain.validReferee(referee_id)){
+    if (referee_id == false || !await league_domain.validReferee(referee_id)){
       incorect_value += " referee"
     }
 
@@ -166,12 +180,20 @@ router.post("/addEventsLog", async (req, res, next) => {
   try {
     var incorect_value = "";
     const eventTypes = ['Goal', 'Red Card', 'Yellow Card', 'Injury', 'Subsitute','None']
-    const match_id = parseInt(req.query.match_id);
+    var match_id;
     const eventLogs = req.body;
 
+
+    if(/^[0-9]+$/.test(req.query.match_id)){
+      match_id = parseInt(req.query.match_id);  
+    }
+    else{
+      match_id = false;
+    }
+
     // check valid match id
-    if (!await matches_domain.matchInPastMatches(match_id)){
-      res.status(400).send("Bad request: match");
+    if (match_id == false || !await matches_domain.matchInPastMatches(match_id)){
+      res.status(400).send("This is not valid match or the match not in the league");
     }
     else{  
 
@@ -237,16 +259,31 @@ router.get("/addEventsLog", async (req, res, next) => {
 router.put("/UpdateResultsMatch", async (req, res, next) => {
   try {
     var incorect_value = "";
-    const match_id = parseInt(req.query.match_id);
-    const home_goals = parseInt(req.query.home_goals);
-    const away_goals = parseInt(req.query.away_goals);
+    var match_id;
+    var home_goals;
+    var away_goals;
+
+    if(/^[0-9]+$/.test(req.query.match_id)){
+      match_id = parseInt(req.query.match_id);  
+    }
+    else{
+      match_id = false;
+    }
+    if(/^[0-9]+$/.test(req.query.home_goals) && /^[0-9]+$/.test(req.query.away_goals)){
+      home_goals = parseInt(req.query.home_goals);
+      away_goals = parseInt(req.query.away_goals);  
+    }
+    else{
+      home_goals = false;
+      away_goals = false;
+    }
 
 
-    if (!await matches_domain.validMatchWithoutResults(match_id)){
+    if (match_id == false || !await matches_domain.validMatchWithoutResults(match_id)){
       incorect_value += " match";
     }
 
-    if(!matches_domain.validResults(home_goals, away_goals)){
+    if(home_goals == false || away_goals == false || !matches_domain.validResults(home_goals, away_goals)){
       incorect_value += " results";
     }
 
