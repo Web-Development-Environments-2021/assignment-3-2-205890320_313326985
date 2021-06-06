@@ -9,7 +9,7 @@ router.get("/getDetails", async (req, res, next) => {
   try {
     var user_logged = false;
     var league_details = await league_domain.getLeagueDetails();
-    var favoriteMatche = [];
+    var favoriteMatches = [];
 
     // next match planned
     const next_match = await matches_domain.nextMatchPlanned();
@@ -29,12 +29,20 @@ router.get("/getDetails", async (req, res, next) => {
 
     if(user_logged){
       const user_id = req.user_id;
+      var match_ids_array = [];
     // get favorite matches ids
       const favoriteMatches_ids = await users_domain.getFavoriteMatchesIDs(user_id);
-      favoriteMatches = await matches_domain.getMatchesInfo(favoriteMatches_ids);
+      favoriteMatches_ids.map((element) => match_ids_array.push(element.match_id)); //extracting match's ids into array
+      favoriteMatches = await matches_domain.getMatchesInfo(match_ids_array);
+    }
+
+    if(league_details.length == 0 && favoriteMatches.length == 0){
+      res.sendStatus(204);
+    }
+    else{
+      res.send({"leaguePreview":league_details, "favoriteMatches": favoriteMatches.slice(0,3)});
     }
     
-    res.send({"leaguePreview":league_details, "favoriteMatches": favoriteMatches.slice(0,3)});
   } catch (error) {
     next(error);
   }

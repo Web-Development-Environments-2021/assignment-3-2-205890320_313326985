@@ -71,7 +71,7 @@ router.post("/addMatch", async (req, res, next) => {
     }
 
     // check if referee exist 
-    if (!awaitleague_domain.validReferee(req.body.referee_id)){
+    if (!await league_domain.validReferee(req.body.referee_id)){
       incorect_value += " referee"  
     }
 
