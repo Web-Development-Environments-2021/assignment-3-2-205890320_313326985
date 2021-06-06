@@ -34,7 +34,6 @@ async function getLeagueDetails() {
       current_season_name: league.data.data.season.data.name,
       current_stage_name: null,
     }
-    
   }
 
 
