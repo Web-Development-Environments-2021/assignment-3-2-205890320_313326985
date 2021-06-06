@@ -80,8 +80,14 @@ router.post("/addMatch", async (req, res, next) => {
     }
     else{
       // insert match to matches table
-      await matches_domain.addMatchDB(req.body.date_time, teams_id.local,req.body.local_team_name, teams_id.visitor, req.body.visitor_team_name,venue_id,req.body.venue_name,req.body.referee_id);
-      res.status(201).send("The match successfully saved to the system");      
+      if (await matches_domain.checkDuplicate(req.body.date_time, teams_id.local,req.body.local_team_name, teams_id.visitor, req.body.visitor_team_name,venue_id,req.body.venue_name,req.body.referee_id)){
+        res.status(409).send("This match already exist in the system");
+      }
+      else{
+        await matches_domain.addMatchDB(req.body.date_time, teams_id.local,req.body.local_team_name, teams_id.visitor, req.body.visitor_team_name,venue_id,req.body.venue_name,req.body.referee_id);
+        res.status(201).send("The match successfully saved to the system");           
+      }
+   
     }
 
   } catch (error) {
@@ -226,8 +232,15 @@ router.post("/addEventsLog", async (req, res, next) => {
         res.status(400).send("Bad request:" + incorect_value);
       }
       else{
-        matches_domain.insertEventsLogDB(match_id, eventLogs);
-        res.status(201).send("successful operation");      
+        var duplicate = await matches_domain.insertEventsLogDB(match_id, eventLogs)
+        if(duplicate.length == 0){
+          res.status(201).send("successful operation"); 
+        }
+        else{
+          res.status(206).send("Not all events were inserted to the table because there were duplicates:" + duplicate);
+        }
+
+             
       }  
 
     }   

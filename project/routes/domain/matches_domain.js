@@ -93,7 +93,7 @@ async function validDateEvent(match_id, date_time, minute){
   var match_date = dateTime_match.split(" ")[0];
   var event_date = date_time.split(" ")[0];
 
-  if(match_date != event_date || minute < 0 || minute > 130){
+  if(match_date != event_date || minute < 0 || minute > 130 || !/^[0-9]+$/.test(minute)){
     return false
   }
   else{
@@ -257,12 +257,19 @@ async function nextMatchPlanned(){
 }
 
 async function insertEventsLogDB(match_id, eventLogs){
+  var duplicate = "";
   for(var i=0 ; i < eventLogs.length ; i++){
     var minute = parseInt(eventLogs[i].minute)
-    await DButils.execQuery(
-      `INSERT INTO dbo.Events (match_id,date_and_time_happend,minute,type,description) VALUES ('${match_id}', '${eventLogs[i].date_and_time_happend}', '${minute}', '${eventLogs[i].type}', '${eventLogs[i].description}')`
-    );
+    if(await checkDuplicateEvent(match_id, eventLogs[i].date_and_time_happend, minute, eventLogs[i].type, eventLogs[i].description)){
+      duplicate += " event " + i;
+    }
+    else{
+      await DButils.execQuery(
+        `INSERT INTO dbo.Events (match_id,date_and_time_happend,minute,type,description) VALUES ('${match_id}', '${eventLogs[i].date_and_time_happend}', '${minute}', '${eventLogs[i].type}', '${eventLogs[i].description}')`
+      );      
+    }
   }
+  return duplicate;
 }
 
 async function getEventsMatch(match_id){
@@ -312,6 +319,44 @@ async function getFutureMatchesIDs(){
   return await Promise.all(promises);
 }
 
+async function checkDuplicate(date_time, local_team_id, local_team_name, visitor_team_id, visitor_team_name, venue_id, venue_name, referee_id){
+  var match = await DButils.execQuery(
+    `select date_time from dbo.Matches where 
+    local_team_id = '${local_team_id}' and
+    local_team_name = '${local_team_name}' and
+    visitor_team_id = '${visitor_team_id}' and
+    visitor_team_name = '${visitor_team_name}' and
+    venue_id = '${venue_id}' and
+    venue_name = '${venue_name}' and
+    referee_id = '${referee_id}' `
+  );
+
+  if (match.find((x) => formatDateTime(x.date_time) === date_time)){
+    return true;
+  }
+  else{
+    return false;
+  }
+  
+}
+
+async function checkDuplicateEvent(match_id, date_and_time_happend, minute, type, description){
+  var event = await DButils.execQuery(
+    `select date_and_time_happend from dbo.Events where 
+    match_id = '${match_id}' and
+    minute = '${minute}' and
+    type = '${type}' and
+    description = '${description}'`
+  );
+
+  if (event.find((x) => formatDateTime(x.date_and_time_happend) === date_and_time_happend)){
+    return true;
+  }
+  else{
+    return false;
+  }
+}
+
 exports.validDate = validDate;
 exports.matchInPastMatches=matchInPastMatches;
 exports.validDateEvent=validDateEvent;
@@ -334,5 +379,7 @@ exports.getMatchesInfo=getMatchesInfo;
 exports.getFutureMatchesIDs=getFutureMatchesIDs;
 exports.insertEventsLogDB=insertEventsLogDB;
 exports.getEventsMatch=getEventsMatch;
+exports.checkDuplicate=checkDuplicate;
+exports.checkDuplicateEvent=checkDuplicateEvent;
 
   
