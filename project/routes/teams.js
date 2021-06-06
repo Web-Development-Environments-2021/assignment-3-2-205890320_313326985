@@ -4,10 +4,7 @@ const player_domain = require("../routes/domain/players_domain");
 const teams_domain = require("../routes/domain/teams_domain");
 const matches_domain = require("../routes/domain/matches_domain");
 
-<<<<<<< HEAD
-=======
 
->>>>>>> 95b14b4f02a1119dc5b4a016fb79af13d7659ec6
 router.get("/teamFullDetails/:teamId", async (req, res, next) => {
   try {
     var team_id;

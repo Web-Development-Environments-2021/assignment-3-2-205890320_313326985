@@ -2,11 +2,8 @@ var express = require("express");
 var router = express.Router();
 const matches_domain = require("./domain/matches_domain");
 
-<<<<<<< HEAD
-=======
 
 
->>>>>>> 95b14b4f02a1119dc5b4a016fb79af13d7659ec6
 // function to get past matches for current stage matches
 router.get("/pastMatches", async (req, res, next) => {
 try{
