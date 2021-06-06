@@ -27,13 +27,49 @@ function validDate(date){
     if(matches == null){
       isDate = false;
     }
-    else if(isNaN(date_time) || date <= currentdate){
+    else if(isNaN(date_time) || date_time <= currentdate || !validDaysInDate(date)){
       isDate = false;
     }
     else{
       isDate = true;
     }
     return isDate;
+}
+
+function validDaysInDate(date){
+  var pdate = date.split(' ');
+  pdate = pdate[0].split('-');
+  var dd = parseInt(pdate[2]);
+  var mm  = parseInt(pdate[1]);
+  var yy = parseInt(pdate[0]);
+  // Create list of days of a month [assume there is no leap year by default]
+  var ListofDays = [31,28,31,30,31,30,31,31,30,31,30,31];
+  if (mm==1 || mm>2){
+    if (dd>ListofDays[mm-1]){
+      return false;
+    }
+    else{
+      return true
+    }
+  }
+  if (mm==2){
+    var lyear = false;
+    if ( (!(yy % 4) && yy % 100) || !(yy % 400)) {
+      lyear = true;
+    }
+    if ((lyear==false) && (dd>=29)){
+      return false;
+    }
+    if ((lyear==true) && (dd>29)){
+      return false;
+    }
+    else{
+      return true;
+    }
+  }
+  else{
+    return false;
+  }
 }
 
 
@@ -109,10 +145,16 @@ async function sortMatches(sortType){
       matches.sort((a,b) => a.date_time - b.date_time);
     }
 
-    // sort by local tam id ascending
-    else if (sortType == 'Teams'){
+    // sort by local team ascending
+    else if (sortType == 'Local Teams'){
       matches.sort((a,b) => ((a.local_team_name).localeCompare(b.local_team_name)));
     }
+
+    // sort by visitor team  ascending
+    else if (sortType == 'Visitor Teams'){
+      matches.sort((a,b) => ((a.visitor_team_name).localeCompare(b.visitor_team_name)));
+    }
+
     else{
         return null;
     }
@@ -156,7 +198,7 @@ async function addMatchDB(date_time, local_team_id, local_team_name, visitor_tea
 async function getFutureMatches(){
     var currentdate = new Date();
     var futureMatches = await DButils.execQuery(
-        `select match_id,date_time,local_team_id,local_team_name,visitor_team_id,visitor_team_name,venue_id,venue_name
+        `select match_id,date_time,local_team_id,local_team_name,visitor_team_id,visitor_team_name,venue_id,venue_name,referee_id
         from dbo.Matches`
     );
     futureMatches.forEach(function(match, i) {
@@ -174,7 +216,7 @@ async function getFutureMatches(){
 async function getPastMatches(){
     var currentdate = new Date();
     var pastMatches = await DButils.execQuery(
-        `select match_id,date_time,local_team_id,local_team_name,visitor_team_id,visitor_team_name,venue_id,venue_name,home_goals, away_goals
+        `select match_id,date_time,local_team_id,local_team_name,visitor_team_id,visitor_team_name,venue_id,venue_name,referee_id,home_goals, away_goals
         from dbo.Matches`
     );
     pastMatches.forEach(function(match, i) {

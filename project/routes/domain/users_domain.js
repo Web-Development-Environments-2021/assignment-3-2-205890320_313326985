@@ -1,3 +1,6 @@
+const DButils = require("../utils/DButils");
+const matches_domain = require("../domain/matches_domain");
+
 async function getFavoriteMatchesIDs(user_id){
     await removeOldMatchesFromFavorites();
     const match_ids = await DButils.execQuery(
