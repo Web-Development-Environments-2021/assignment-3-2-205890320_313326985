@@ -1,7 +1,5 @@
 const teams_utils = require("../utils/teams_utils");
 const league_utils = require("../utils/league_utils");
-// get current season
-const current_season_id = league_utils.getCurrentSeasonID();
 
 function extractRelevantTeamData(teams_info) {
     return teams_info.map((team) => {
@@ -39,6 +37,8 @@ async function SortTeams(team_list_filtered_by_season_sorted_by_name,sort_way){
 async function searchForTeamsInOurSeason(team_name_to_search){
   const team_list = await teams_utils.getTeamsByName(team_name_to_search);
   const team_list_filtered_by_season=[];
+  // get current season
+  const current_season_id =await league_utils.getCurrentSeasonID();
   // push all teams to arr by specific season
   for(var i=0; i<team_list.length; i++){
     if (team_list[i].current_season_id == current_season_id){

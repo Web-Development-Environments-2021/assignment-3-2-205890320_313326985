@@ -1,21 +1,20 @@
 const DButils = require("../utils/DButils");
 
 async function getPastMatchesForStageMatches(){
-    const oldMatches = await getPastMatches();
-    // for each old match object
-    // add if it has more than 2 event-logs
+    // find match ids for this kind of games
     const relevantMatchIDs=await getIDsOfMatchesWithThreeEventsOrMore();
-    for(var i=0; i< oldMatches.length; i++){
-      // remove non-relevant objects
-      if(!(relevantMatchIDs.includes(oldMatches[i].match_id))){
-        oldMatches.splice(i,1);
-      }
-      // add events to relevant objects
-      else{
-        oldMatches[i].events= await getEventsMatch(oldMatches[i].match_id);
-      }
+    if( relevantMatchIDs.length == 0){
+      return 0;
     }
-    return oldMatches;
+    // get their info
+    const matchesInfo = await getMatchesInfo(relevantMatchIDs);
+    var pastMatchesWithEvent = []
+    for(var i=0 ; i < matchesInfo.length ; i++){
+      var match = matchesInfo[i][0];
+      var events = await getEventsMatch(matchesInfo[i][0].match_id);
+      pastMatchesWithEvent.push({"MatchDetails": match, "MatchEvents": events});
+    }
+    return pastMatchesWithEvent;
 }
 
 function validDate(date){
@@ -280,12 +279,13 @@ async function getIDsOfMatchesWithThreeEventsOrMore(){
   return await DButils.execQuery(
     `select match_id
      from dbo.Events
-     where event_id in(
+     where match_id in(
      select match_id
      from dbo.Events 
      group by match_id 
      having count(event_id)>2
-     )`
+     )
+     group by match_id`
   );
 }
 
@@ -294,7 +294,7 @@ async function getMatchesInfo(matches_ids_list) {
   matches_ids_list.map((id) =>
     promises.push(
         DButils.execQuery(
-            `select match_id,date_time,local_team_id,visitor_team_id,venue_id 
+            `select * 
             from dbo.Matches 
             where match_id='${id}'`
         )

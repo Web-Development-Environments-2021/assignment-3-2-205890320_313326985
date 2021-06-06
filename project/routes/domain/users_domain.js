@@ -1,5 +1,5 @@
 const DButils = require("../utils/DButils");
-const matches_domain = require("../domain/matches_domain");
+const matches_domain = require("./matches_domain");
 
 async function getFavoriteMatchesIDs(user_id){
     await removeOldMatchesFromFavorites();
@@ -15,14 +15,14 @@ async function markFavorites(user_id, match_id,future_match_id_from_table){
     // if requested match is a future match
     if(future_match_id_from_table.includes(match_id)){
       const favoriteMatchIDs = await getFavoriteMatchesIDs(user_id);
-      if(favoriteMatchIDs.includes(match_id)){
-        return -1;
+      for(var i = 0; i< favoriteMatchIDs.length; i++){
+        if(favoriteMatchIDs[i].match_id == match_id){
+          return -1;
+        }
       }
-      else{
-        await DButils.execQuery(
-          `insert into dbo.FavoriteMatches values ('${user_id}','${match_id}')`
-          );
-      }
+      await DButils.execQuery(
+        `insert into dbo.FavoriteMatches values ('${user_id}','${match_id}')`
+        );
     }
     else{
       return 0;
@@ -45,7 +45,7 @@ async function removeOldMatchesFromFavorites(){
     return Date.parse(match.date_time) <= Date.parse(currentdate);
   })
     
-  const oldMatchesIDs= getIDsFromMatches(oldMatches);
+  const oldMatchesIDs= await getIDsFromMatches(oldMatches);
 
   // delete old matches from favorite
   for(var i=0; i<oldMatchesIDs.length; i++){

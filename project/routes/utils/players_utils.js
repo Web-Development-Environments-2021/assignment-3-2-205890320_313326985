@@ -5,7 +5,8 @@ const api_domain = "https://soccer.sportmonks.com/api/v2.0";
 // get players by name typed in query, include team in http req'
 async function getPlayersByNameAndTeam(player_name){
   let player_info_list = [];
-  const players = await axios.get(`${api_domain}/players/search/${player_name}`, {
+  const url = encodeURI(`${api_domain}/players/search/${player_name}`);
+  const players = await axios.get(url, {
     params: {
       api_token: process.env.api_token,
       include:'team'
