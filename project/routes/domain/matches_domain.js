@@ -12,7 +12,7 @@ async function getPastMatchesForStageMatches(){
       }
       // add events to relevant objects
       else{
-        oldMatches[i].events= await getEventsOfPastMatch(oldMatches[i].match_id);
+        oldMatches[i].events= await getEventsMatch(oldMatches[i].match_id);
       }
     }
     return oldMatches;
@@ -27,19 +27,59 @@ function validDate(date){
     if(matches == null){
       isDate = false;
     }
-    else if(isNaN(date_time) || date_time <= currentdate){
+    else if(isNaN(date_time) || date <= currentdate){
       isDate = false;
     }
     else{
       isDate = true;
     }
     return isDate;
+}
+
+
+async function matchInPastMatches(match_id){
+  const pastMatches = await getPastMatches();
+
+  if(pastMatches.find((x) => x.match_id === match_id)){
+    return true;
+  }
+  else{
+    return false;
   }
 
-  function formatDateTime(date_time){
-    var datetime = new Date(date_time).toISOString().slice(0,19).replace('T', ' ');
-    return datetime;
+}
+
+async function validDateEvent(match_id, date_time, minute){
+
+  var dateTime_match = await DButils.execQuery(
+    `SELECT date_time FROM dbo.Matches WHERE match_id = '${match_id}'`
+  );
+  dateTime_match = formatDateTime(dateTime_match[0].date_time);
+  var match_date = dateTime_match.split(" ")[0];
+  var event_date = date_time.split(" ")[0];
+
+  if(match_date != event_date || minute < 0 || minute > 130){
+    return false
   }
+  else{
+    var diffMs = Math.abs((Date.parse(date_time) - Date.parse(dateTime_match)))/1000;
+    var diffMins = Math.floor(diffMs / 60);
+
+    if(diffMins < 0 || diffMins > 130 || diffMins != minute){
+      return false;
+    }
+    else{
+      return true;
+    }
+
+
+  }
+}
+
+function formatDateTime(date_time){
+  var datetime = new Date(date_time).toISOString().slice(0,19).replace('T', ' ');
+  return datetime;
+}
 
 
 
@@ -60,21 +100,21 @@ async function sortMatches(sortType){
     );
     
     // sort by match id
-    if (sort == 'none'){
+    if (sortType == 'none'){
       matches.sort((a,b) => a.match_id - b.match_id);
     }
 
-    // sort by date time descending 
-    else if (sort == 'Date'){
-      matches.sort((a,b) => b.date_time - a.date_time);
+    // sort by date time ascending 
+    else if (sortType == 'Date'){
+      matches.sort((a,b) => a.date_time - b.date_time);
     }
 
     // sort by local tam id ascending
-    else if (sort == 'Teams'){
+    else if (sortType == 'Teams'){
       matches.sort((a,b) => ((a.local_team_name).localeCompare(b.local_team_name)));
     }
     else{
-        return false;
+        return null;
     }
     return matches;
 }
@@ -156,6 +196,18 @@ async function getPastMatchWithoutResult(){
     return MatchesWithoutResults;
 }
 
+async function validMatchWithoutResults(match_id){
+  const MatchesWithoutResults = await getPastMatchWithoutResult();
+
+  if(MatchesWithoutResults.find((x) => x.match_id === match_id)){
+    return true;
+  }
+  else{
+    return false;
+  }
+
+}
+
 async function nextMatchPlanned(){
     var futureMatches = await getFutureMatches();
     next_match = futureMatches.sort((a,b) => a.date_time - b.date_time);
@@ -163,13 +215,23 @@ async function nextMatchPlanned(){
     return next_match[0];
 }
 
-async function getEventsOfPastMatch(match_id){
-  return await DButils.execQuery(
-    `select * 
-     from dbo.Events 
-     where match_id = ${match_id}`
-  );
+async function insertEventsLogDB(match_id, eventLogs){
+  for(var i=0 ; i < eventLogs.length ; i++){
+    var minute = parseInt(eventLogs[i].minute)
+    await DButils.execQuery(
+      `INSERT INTO dbo.Events (match_id,date_and_time_happend,minute,type,description) VALUES ('${match_id}', '${eventLogs[i].date_and_time_happend}', '${minute}', '${eventLogs[i].type}', '${eventLogs[i].description}')`
+    );
+  }
 }
+
+async function getEventsMatch(match_id){
+  var events = await DButils.execQuery(
+    `select * from dbo.Events where match_id = '${match_id}'`
+  );
+
+  return events;
+}
+
 
 // get event matches with their info, to stage matches page
 async function getIDsOfMatchesWithThreeEventsOrMore(){
@@ -209,6 +271,8 @@ async function getFutureMatchesIDs(){
 }
 
 exports.validDate = validDate;
+exports.matchInPastMatches=matchInPastMatches;
+exports.validDateEvent=validDateEvent;
 exports.formatDateTime = formatDateTime;
 exports.validResults = validResults;
 exports.sortMatches = sortMatches;
@@ -221,8 +285,12 @@ exports.getPastMatchWithoutResult=getPastMatchWithoutResult
 exports.getPastMatchesForStageMatches = getPastMatchesForStageMatches;
 exports.getPastMatches=getPastMatches;
 exports.getPastMatchWithoutResult=getPastMatchWithoutResult;
+exports.validMatchWithoutResults=validMatchWithoutResults;
 exports.nextMatchPlanned=nextMatchPlanned;
-exports.getEventsOfPastMatch = getEventsOfPastMatch;
 exports.getIDsOfMatchesWithThreeEventsOrMore = getIDsOfMatchesWithThreeEventsOrMore;
 exports.getMatchesInfo=getMatchesInfo;
 exports.getFutureMatchesIDs=getFutureMatchesIDs;
+exports.insertEventsLogDB=insertEventsLogDB;
+exports.getEventsMatch=getEventsMatch;
+
+  

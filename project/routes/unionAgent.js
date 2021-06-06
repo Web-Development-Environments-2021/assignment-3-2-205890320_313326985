@@ -9,31 +9,40 @@ const matches_domain = require("./domain/matches_domain");
 /**
  * Authenticate all incoming requests by middleware
  */
-//  router.use(async function (req, res, next) {
-//   if (req.session && req.session.user_id) {
-//     DButils.execQuery("SELECT user_id, union_agent FROM dbo.Users WHERE union_agent=1")
-//       .then((users) => {
-//         if (users.find((x) => x.user_id === req.session.user_id)) {
-//           req.user_id = req.session.user_id;
-//           next();
-//         }
-//       })
-//       .catch((err) => next(err));
-//   } else {
-//     res.sendStatus(401);
-//   }
-// });
+ router.use(async function (req, res, next) {
+  if (req.session && req.session.user_id) {
+    DButils.execQuery("SELECT user_id,union_agent FROM dbo.Users")
+      .then((users) => {
+        if (users.find((x) => (x.user_id === req.session.user_id && x.union_agent))) {
+          req.user_id = req.session.user_id;
+          next();
+        }
+        else{
+          res.sendStatus(401);
+        }
+      })
+      .catch((err) => next(err));
+  } else {
+    res.sendStatus(401);
+  }
+});
 
 
 // send all matches of union agent
 router.get("", async (req, res, next) => {
   try {
     const matches = await matches_domain.sortMatches(req.query.sort)
-    if( matches == false){
-      throw { status: 400, message: "Wrong sort type" };
+    if( matches == null){
+      res.status(400).send("Wrong sort type");
     }
 
-    res.send(matches);  
+    else if( matches.length == 0){
+      res.sendStatus(204);
+    }
+    else{
+      res.send(matches);
+    }
+      
   } catch (error) {
     next(error);
   }
@@ -67,13 +76,14 @@ router.post("/addMatch", async (req, res, next) => {
     }
 
     if (incorect_value.length != 0){
-      throw { status: 400, message: "Bad request:" + incorect_value };
+      res.status(400).send("Bad request:" + incorect_value);
+    }
+    else{
+      // insert match to matches table
+      await matches_domain.addMatchDB(req.body.date_time, teams_id.local,req.body.local_team_name, teams_id.visitor, req.body.visitor_team_name,venue_id,req.body.venue_name,req.body.referee_id);
+      res.status(201).send("The match successfully saved to the system");      
     }
 
-    // insert match to matches table
-    await matches_domain.addMatchDB(req.body.date_time, teams_id.local,req.body.local_team_name, teams_id.visitor, req.body.visitor_team_name,venue_id,req.body.venue_name,req.body.referee_id);
-
-    res.status(201).send("The match successfully saved to the system");
   } catch (error) {
     next(error);
   }
@@ -86,7 +96,13 @@ router.get("/addMatch", async (req, res, next) =>{
     const venues = await league_domain.getAllRelevantVenues();
     const referees = await league_domain.getAllRelevantReferees();
 
-    res.send({"teams":teams, "venues":venues, "referees":referees });
+    if(teams.length == 0 && venues.length == 0 && referees.length == 0){
+      res.sendStatus(204);;
+    }
+    else{
+      res.send({"teams":teams, "venues":venues, "referees":referees });
+    }
+
   }catch (error) {
     next(error);
   }
@@ -100,26 +116,25 @@ router.put("/UpdateRefereeMatch", async (req, res, next) => {
     const match_id = parseInt(req.query.match_id);
     const referee_id = parseInt(req.query.referee_id);
 
-
     // Check if the match id and referee id exist in the match table
-    if (!matches_domain.validMatch(match_id)){
+    if (!await matches_domain.validMatch(match_id)){
       incorect_value += " match"
     }
 
-    if (!league_domain.validReferee(referee_id)){
+    if (!await league_domain.validReferee(referee_id)){
       incorect_value += " referee"
     }
 
     if (incorect_value.length != 0){
-      throw { status: 400, message: "Bad request:" + incorect_value };
-
+      res.status(400).send("Bad request:" + incorect_value);
+    }
+    else{
+      // update the referee id in the matches table
+      await matches_domain.updateRefereeDB(referee_id, match_id);
+      res.status(201).send("successful operation");      
     }
 
-    // update the referee id in the matches table
-    matches_domain.updateRefereeDB(referee_id, match_id);
-    
 
-    res.status(201).send("successful operation");
   } catch (error) {
     next(error);
   }
@@ -132,7 +147,12 @@ router.get("/UpdateRefereeMatch", async (req, res, next) =>{
     const pastMatches = await matches_domain.getPastMatches();
     const referees = await league_domain.getAllRelevantReferees();
 
-    res.send({"futurematches":futureMatches, "pastmatches":pastMatches, "referees":referees });
+    if(futureMatches.length == 0 && pastMatches.length == 0 && referees.length == 0){
+      res.sendStatus(204);
+    }
+    else{
+       res.send({"futurematches":futureMatches, "pastmatches":pastMatches, "referees":referees });
+    }
 
   }catch (error) {
     next(error);
@@ -145,31 +165,51 @@ router.get("/UpdateRefereeMatch", async (req, res, next) =>{
 router.post("/addEventsLog", async (req, res, next) => {
   try {
     var incorect_value = "";
+    const eventTypes = ['Goal', 'Red Card', 'Yellow Card', 'Injury', 'Subsitute','None']
     const match_id = parseInt(req.query.match_id);
     const eventLogs = req.body;
 
-    if (!matches_domain.validMatch(match_id)){
-      incorect_value += " match"
+    // check valid match id
+    if (!await matches_domain.matchInPastMatches(match_id)){
+      res.status(400).send("Bad request: match");
     }
-    for(var i = 0 ; i < eventLogs.length; i++){
-      // check if valid date
+    else{  
 
-      // check valid minute
+      for(var i = 0 ; i < eventLogs.length; i++){
+        var date_time = eventLogs[i].date_and_time_happend;
+        var minute = eventLogs[i].minute;
+        var type = eventLogs[i].type;
+        var description = eventLogs[i].description;
 
-      // check type event
+        // check if valid date and minute
+        if(!await matches_domain.validDateEvent(match_id, date_time, minute)){
+          incorect_value += " event " + i.toString() + " date/minute";
+          break;
+        }
 
-      
-      await DButils.execQuery(
-        `INSERT INTO dbo.Events (match_id,date_and_time_happend,minute,type) VALUES ('${match_id}', '${eventLogs[i].date_and_time_happend}', '${eventLogs[i].minute}', '${eventLogs[i].type}')`
-      );
-    }
-    
-    if (incorect_value.length != 0){
-      throw { status: 400, message: "Bad request:" + incorect_value };
-    }  
+        // check type event
+        if(!eventTypes.includes(type)){
+          incorect_value += " event " + i.toString() + " type";
+          break;
+        }
 
-      
-    res.status(201).send("successful operation");
+        // check if description added
+        if(description.length == 0){
+          incorect_value += " event " + i.toString() + " description";
+          break;
+        }
+      }
+
+      if (incorect_value.length != 0){
+        res.status(400).send("Bad request:" + incorect_value);
+      }
+      else{
+        matches_domain.insertEventsLogDB(match_id, eventLogs);
+        res.status(201).send("successful operation");      
+      }  
+
+    }   
+
   } catch (error) {
     next(error);
   }
@@ -180,7 +220,13 @@ router.get("/addEventsLog", async (req, res, next) => {
   try {
     const matches = await matches_domain.getPastMatches();
 
-    res.send(matches);  
+    if(matches.length == 0){
+      res.sendStatus(204);
+    }
+    else{
+      res.send(matches);  
+    }
+
   } catch (error) {
     next(error);
   }
@@ -191,22 +237,28 @@ router.get("/addEventsLog", async (req, res, next) => {
 router.put("/UpdateResultsMatch", async (req, res, next) => {
   try {
     var incorect_value = "";
+    const match_id = parseInt(req.query.match_id);
+    const home_goals = parseInt(req.query.home_goals);
+    const away_goals = parseInt(req.query.away_goals);
 
-    if (!matches_domain.validMatch(req.body.match_id)){
-      incorect_value = " match";
+
+    if (!await matches_domain.validMatchWithoutResults(match_id)){
+      incorect_value += " match";
     }
 
-    if(!matches_domain.validResults(req.body.home_goals, req.body.away_goals)){
-      incorect_value = " results";
+    if(!matches_domain.validResults(home_goals, away_goals)){
+      incorect_value += " results";
     }
 
     if (incorect_value.length != 0 ){
-      throw { status: 400, message: "Bad request:" + incorect_value };
+      res.status(400).send("Bad request:" + incorect_value);
+    }
+    else{
+      matches_domain.updateResultsDB(match_id, home_goals, away_goals);
+      res.status(201).send("successful operation");     
     }
 
-    matches_domain.updateResultsDB(req.body.match_id, req.body.home_goals,req.body.away_goals);
 
-    res.status(201).send("successful operation");
   } catch (error) {
     next(error);
   }
@@ -217,7 +269,13 @@ router.get("/UpdateResultsMatch", async (req, res, next) => {
   try {
     const matches = await matches_domain.getPastMatchWithoutResult()
 
-    res.send(matches);  
+    if(matches.length == 0){
+      res.sendStatus(204);
+    }
+    else{
+      res.send(matches); 
+    }
+
   } catch (error) {
     next(error);
   }
