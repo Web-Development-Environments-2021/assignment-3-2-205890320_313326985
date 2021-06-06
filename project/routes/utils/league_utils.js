@@ -12,51 +12,30 @@ async function getLeagueDetails() {
       },
     }
   );
-  const current_season_id = getCurrentSeasonID();
-  const ListOfStages = await axios.get(
-    `https://soccer.sportmonks.com/api/v2.0/stages/season/${current_season_id}`,
-    {
+  if(league.data.data.current_stage_id != null){
+    const stage = await axios.get(
+    `https://soccer.sportmonks.com/api/v2.0/stages/${league.data.data.current_stage_id}`,
+      {
       params: {
-        api_token: process.env.api_token
-      },
-    }
-  );
-  // return back elevant data
-  return {
-        league_name: league.data.data.name,
-        current_season_name: league.data.data.season.data.name,
-        current_stage_name: ListOfStages.data.data[0].name,
-      };
-
-
-
-  /*
-  LIAD PUT IN COMMENT SO TRY TO PUT SHIR'S IDEA
-  */
-  // if( league.data.data.current_stage_id != null){
-  //   const stage = await axios.get(
-  //   `https://soccer.sportmonks.com/api/v2.0/stages/${league.data.data.current_stage_id}`,
-  //     {
-  //     params: {
-  //       api_token: process.env.api_token,
-  //       },
-  //     }
-  //   );
+        api_token: process.env.api_token,
+        },
+      }
+    );
   
-  //   return {
-  //     league_name: league.data.data.name,
-  //     current_season_name: league.data.data.season.data.name,
-  //     current_stage_name: stage.data.data.name,
-  //   };
-  // }
-  // else{
-  //   return {
-  //     league_name: league.data.data.name,
-  //     current_season_name: league.data.data.season.data.name,
-  //     current_stage_name: null,
-  //   }
+    return {
+      league_name: league.data.data.name,
+      current_season_name: league.data.data.season.data.name,
+      current_stage_name: stage.data.data.name,
+    };
+  }
+  else{
+    return {
+      league_name: league.data.data.name,
+      current_season_name: league.data.data.season.data.name,
+      current_stage_name: null,
+    }
     
-  // }
+  }
 
 
 
