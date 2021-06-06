@@ -30,24 +30,27 @@ router.use(async function (req, res, next) {
   try {
     const amountOfParams = Object.keys(req.query).length;
     // sanity check
-     if (req.body.length != undefined || amountOfParams > 0 ){
-      throw{status: 400, message: "Not suppose to have any params or body"};
+    if (req.body.length != undefined || amountOfParams > 0 ){
+      res.status(400).send("Not suppose to have any params or body");
+      // throw{status: 400, message: "Not suppose to have any params or body"};
     }
-    const user_id = req.session.user_id;
+    else{
+      const user_id = req.session.user_id;
     
-    // const match_ids = await matches_domain.getFutureMatches();
-
-    // get favorite matches ids
-    const favoriteMatches_ids = await users_domain.getFavoriteMatchesIDs(user_id);
-
-    // returning 0 means error from help function
-    if(favoriteMatches_ids.length == 0){
-      throw { status: 204, message: "This user does not have any favorite matches" };
+      // get favorite matches ids
+      const favoriteMatches_ids = await users_domain.getFavoriteMatchesIDs(user_id);
+      // returning 0 means error from help function
+      if(favoriteMatches_ids.length == 0){
+        res.status(204).send("This user does not have any favorite matches");
+        // throw { status: 204, message: "This user does not have any favorite matches" };
+      }
+      else{
+        let match_ids_array = [];
+        favoriteMatches_ids.map((element) => match_ids_array.push(element.match_id)); //extracting match's ids into array
+        const results = await matches_domain.getMatchesInfo(match_ids_array);
+        res.status(200).send(results);
+      }
     }
-    let match_ids_array = [];
-    favoriteMatches_ids.map((element) => match_ids_array.push(element.match_id)); //extracting match's ids into array
-    const results = await matches_domain.getMatchesInfo(match_ids_array);
-    res.status(200).send(results);
   } catch (error) {
     next(error);
   }
@@ -60,25 +63,30 @@ router.use(async function (req, res, next) {
   try {
     const amountOfParams = Object.keys(req.query).length;
     // sanity check
-     if (req.body.match_id == undefined ||  !(/^[0-9]+$/.test(req.body.match_id)) ||amountOfParams > 0 ){
-      throw{status: 400, message: "invalid body"};
-    }
-    const user_id = req.session.user_id;
-    const match_Id_from_body = req.body.match_id;
-
-    //get all future matches ids
-    const future_match_id_from_table = await matches_domain.getFutureMatchesIDs();
-
-    const num_of_error = await users_domain.markFavorites(user_id, match_Id_from_body,future_match_id_from_table);
-    if(num_of_error== 0){
-      throw{status:400,message:"match id is not a future match id or is invalid"};
-    }
-    else if(num_of_error == -1){
-      throw{status:400,message:"match id already inside favorites"};
+    if (req.body.match_id == undefined ||  !(/^[0-9]+$/.test(req.body.match_id)) ||amountOfParams > 0 ){
+      res.status(400).send("invalid body");
+      // throw{status: 400, message: "invalid body"};
     }
     else{
-      res.status(201).send("The match successfully saved to the favorites");
-    }
+      const user_id = req.session.user_id;
+      const match_Id_from_body = req.body.match_id;
+
+      //get all future matches ids
+      const future_match_id_from_table = await matches_domain.getFutureMatchesIDs();
+
+      const num_of_error = await users_domain.markFavorites(user_id, match_Id_from_body,future_match_id_from_table);
+      if(num_of_error== 0){
+        res.status(400).send("match id is not a future match id or is invalid");
+        // throw{status:400,message:"match id is not a future match id or is invalid"};
+      }
+      else if(num_of_error == -1){
+        res.status(400).send("match id already inside favorites");
+        // throw{status:400,message:"match id already inside favorites"};
+      }
+      else{
+        res.status(201).send("The match successfully saved to the favorites");
+      }
+    } 
   } catch (error) {
     next(error);
   }

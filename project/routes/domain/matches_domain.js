@@ -3,6 +3,9 @@ const DButils = require("../utils/DButils");
 async function getPastMatchesForStageMatches(){
     // find match ids for this kind of games
     const relevantMatchIDs=await getIDsOfMatchesWithThreeEventsOrMore();
+    if( relevantMatchIDs.length == 0){
+      return 0;
+    }
     // get their info
     const matchesInfo = await getMatchesInfo(relevantMatchIDs);
     var pastMatchesWithEvent = []
