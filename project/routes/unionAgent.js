@@ -185,7 +185,7 @@ router.get("/UpdateRefereeMatch", async (req, res, next) =>{
 router.post("/addEventsLog", async (req, res, next) => {
   try {
     var incorect_value = "";
-    const eventTypes = ['Goal', 'Red Card', 'Yellow Card', 'Injury', 'Subsitute','None']
+    const eventTypes = ['Goal', 'Red Card', 'Yellow Card', 'Injury', 'Substitute','None']
     var match_id;
     const eventLogs = req.body;
 
