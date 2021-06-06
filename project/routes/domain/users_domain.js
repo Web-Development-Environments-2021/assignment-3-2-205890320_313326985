@@ -14,14 +14,14 @@ async function markFavorites(user_id, match_id,future_match_id_from_table){
     // if requested match is a future match
     if(future_match_id_from_table.includes(match_id)){
       const favoriteMatchIDs = await getFavoriteMatchesIDs(user_id);
-      if(favoriteMatchIDs.includes(match_id)){
-        return -1;
+      for(var i = 0; i< favoriteMatchIDs.length; i++){
+        if(favoriteMatchIDs[i].match_id == match_id){
+          return -1;
+        }
       }
-      else{
-        await DButils.execQuery(
-          `insert into dbo.FavoriteMatches values ('${user_id}','${match_id}')`
-          );
-      }
+      await DButils.execQuery(
+        `insert into dbo.FavoriteMatches values ('${user_id}','${match_id}')`
+        );
     }
     else{
       return 0;

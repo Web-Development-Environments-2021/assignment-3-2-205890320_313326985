@@ -4,7 +4,8 @@ const api_domain = "https://soccer.sportmonks.com/api/v2.0";
 
 async function getTeamsByName(team_name) {
   let team_info_list = [];
-  const teams = await axios.get(`${api_domain}/teams/search/${team_name}`, {
+  const url = encodeURI(`${api_domain}/teams/search/${team_name}`);
+  const teams = await axios.get(url, {
     params: {
       api_token: process.env.api_token,
       include:'season'
