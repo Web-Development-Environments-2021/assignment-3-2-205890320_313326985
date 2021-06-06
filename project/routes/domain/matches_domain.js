@@ -7,7 +7,7 @@ async function getPastMatchesForStageMatches(){
       return 0;
     }
     // get their info
-    const matchesInfo = await getMatchesInfo(relevantMatchIDs);
+    const matchesInfo = await getPastMatchesInfo(relevantMatchIDs);
     var pastMatchesWithEvent = []
     for(var i=0 ; i < matchesInfo.length ; i++){
       var match = matchesInfo[i][0];
@@ -289,12 +289,26 @@ async function getIDsOfMatchesWithThreeEventsOrMore(){
   );
 }
 
-async function getMatchesInfo(matches_ids_list) {
+async function getPastMatchesInfo(matches_ids_list) {
   let promises = [];
   matches_ids_list.map((id) =>
     promises.push(
         DButils.execQuery(
             `select * 
+            from dbo.Matches 
+            where match_id='${id.match_id}'`
+        )
+    )
+  );
+  return await Promise.all(promises);
+}
+
+async function getFutureMatchesInfo(matches_ids_list) {
+  let promises = [];
+  matches_ids_list.map((id) =>
+    promises.push(
+        DButils.execQuery(
+            `select match_id,date_time,local_team_id,local_team_name,visitor_team_id,visitor_team_name,venue_id,venue_name,referee_id
             from dbo.Matches 
             where match_id='${id.match_id}'`
         )
@@ -330,7 +344,8 @@ exports.getPastMatchWithoutResult=getPastMatchWithoutResult;
 exports.validMatchWithoutResults=validMatchWithoutResults;
 exports.nextMatchPlanned=nextMatchPlanned;
 exports.getIDsOfMatchesWithThreeEventsOrMore = getIDsOfMatchesWithThreeEventsOrMore;
-exports.getMatchesInfo=getMatchesInfo;
+exports.getPastMatchesInfo=getPastMatchesInfo;
+exports.getFutureMatchesInfo = getFutureMatchesInfo;
 exports.getFutureMatchesIDs=getFutureMatchesIDs;
 exports.insertEventsLogDB=insertEventsLogDB;
 exports.getEventsMatch=getEventsMatch;

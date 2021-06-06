@@ -45,7 +45,7 @@ router.use(async function (req, res, next) {
         // throw { status: 204, message: "This user does not have any favorite matches" };
       }
       else{
-        const results = await matches_domain.getMatchesInfo(favoriteMatches_ids);
+        const results = await matches_domain.getFutureMatchesInfo(favoriteMatches_ids);
         res.status(200).send(results);
       }
     }
