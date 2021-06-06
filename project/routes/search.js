@@ -61,7 +61,7 @@ router.get("/Players", async (req, res, next) => {
   try{
     // sanity checks
     const amountOfParams = Object.keys(req.query).length;
-    if (req.query.query == undefined || req.query.sort == undefined || req.query.filter == undefined || amountOfParams > 3){
+    if (req.query.query == undefined || req.query.sort == undefined || req.query.filter == undefined || amountOfParams < 3){
       res.status(400).send("invalid parameter names");
       // throw{status: 400, message: "invalid parameter names"};
     }

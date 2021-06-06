@@ -253,7 +253,7 @@ async function getMatchesInfo(matches_ids_list) {
         DButils.execQuery(
             `select * 
             from dbo.Matches 
-            where match_id='${id}'`
+            where match_id='${id.match_id}'`
         )
     )
   );

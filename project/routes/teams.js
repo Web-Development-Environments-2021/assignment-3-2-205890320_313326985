@@ -4,24 +4,6 @@ const player_domain = require("../routes/domain/players_domain");
 const teams_domain = require("../routes/domain/teams_domain");
 const matches_domain = require("../routes/domain/matches_domain");
 
-/**
- * Authenticate all incoming requests by middleware
- */
-//  router.use(async function (req, res, next) {
-//   if (req.session && req.session.user_id) {
-//     DButils.execQuery("SELECT user_id FROM dbo.Users")
-//       .then((users) => {
-//         if (users.find((x) => x.user_id === req.session.user_id)) {
-//           req.user_id = req.session.user_id;
-//           next();
-//         }
-//       })
-//       .catch((err) => next(err));
-//   } else {
-//     res.sendStatus(401);
-//   }
-// });
-
 router.get("/teamFullDetails/:teamId", async (req, res, next) => {
   try {
     const team_id = parseInt(req.params.teamId);

@@ -45,9 +45,7 @@ router.use(async function (req, res, next) {
         // throw { status: 204, message: "This user does not have any favorite matches" };
       }
       else{
-        let match_ids_array = [];
-        favoriteMatches_ids.map((element) => match_ids_array.push(element.match_id)); //extracting match's ids into array
-        const results = await matches_domain.getMatchesInfo(match_ids_array);
+        const results = await matches_domain.getMatchesInfo(favoriteMatches_ids);
         res.status(200).send(results);
       }
     }
