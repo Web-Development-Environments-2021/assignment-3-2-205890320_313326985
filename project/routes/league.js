@@ -29,11 +29,9 @@ router.get("/getDetails", async (req, res, next) => {
 
     if(user_logged){
       const user_id = req.user_id;
-      var match_ids_array = [];
     // get favorite matches ids
       const favoriteMatches_ids = await users_domain.getFavoriteMatchesIDs(user_id);
-      favoriteMatches_ids.map((element) => match_ids_array.push(element.match_id)); //extracting match's ids into array
-      favoriteMatches = await matches_domain.getMatchesInfo(match_ids_array);
+      favoriteMatches = await matches_domain.getMatchesInfo(favoriteMatches_ids);
     }
 
     if(league_details.length == 0 && favoriteMatches.length == 0){
