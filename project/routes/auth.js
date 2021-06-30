@@ -52,7 +52,7 @@ router.post("/Login", async (req, res, next) => {
     req.session.user_id = user.user_id;
 
     // return cookie
-    res.status(200).send("login succeeded");
+    res.status(200).send({message:"login succeeded",union_agent: user.union_agent});
   } catch (error) {
     next(error);
   }
