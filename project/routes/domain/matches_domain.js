@@ -280,6 +280,15 @@ async function getEventsMatch(match_id){
   return events;
 }
 
+async function getReferee(referee_id){
+  var referee = await DButils.execQuery(
+    `select * from dbo.Referees where referee_id = '${referee_id}'`
+  );
+
+  return referee;
+}
+
+
 
 // get event matches with their info, to stage matches page
 async function getIDsOfMatchesWithThreeEventsOrMore(){
@@ -396,5 +405,6 @@ exports.insertEventsLogDB=insertEventsLogDB;
 exports.getEventsMatch=getEventsMatch;
 exports.checkDuplicate=checkDuplicate;
 exports.checkDuplicateEvent=checkDuplicateEvent;
+exports.getReferee=getReferee;
 
   

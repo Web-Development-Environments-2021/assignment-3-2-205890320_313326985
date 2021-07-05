@@ -31,7 +31,7 @@ const matches_domain = require("./domain/matches_domain");
 // send all matches of union agent
 router.get("", async (req, res, next) => {
   try {
-    const matches = await matches_domain.sortMatches(req.query.sort)
+    var matches = await matches_domain.sortMatches(req.query.sort);
     if( matches == null){
       res.status(400).send("Wrong sort type");
     }
@@ -40,6 +40,10 @@ router.get("", async (req, res, next) => {
       res.sendStatus(204);
     }
     else{
+      for(let i=0 ; i<matches.length ; i++){
+        matches[i]["events"] = await matches_domain.getEventsMatch(matches[i].match_id);
+        matches[i]["referee"] = await matches_domain.getReferee(matches[i].referee_id)
+      }
       res.send(matches);
     }
       
