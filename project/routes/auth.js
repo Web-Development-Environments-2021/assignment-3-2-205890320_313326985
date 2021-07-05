@@ -59,25 +59,6 @@ router.post("/Login", async (req, res, next) => {
 });
 
 
-router.post("/TestLogin", async (req, res, next) => {
-  try {
-    const user = {username: "liadna", password: "$2a$13$mKa.NtWdpT8YKyenldc/LuzCZWlQ74i0bkftAIdC48hmI/WBQDhTu"};
-    const y=req.body;
-    const y1=req;
-    const y2= req.params;
-    const y3 = req.query;
-    // check that username exists & the password is correct
-    if (!user || !bcrypt.compareSync("147147", user.password)) {
-      throw { status: 401, message: "Username or Password incorrect" };
-    }
-
-    // return cookie
-    res.status(200).send("login succeeded");
-  } catch (error) {
-    next(error);
-  }
-});
-
 router.post("/Logout", function (req, res) {
   req.session.reset(); // reset the session info --> send cookie when  req.session == undefined!!
   res.send({ success: true, message: "logout succeeded" });
