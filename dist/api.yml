@@ -856,6 +856,9 @@ components:
     SearchTeams:
       type: object
       properties:
+        id:
+          type: integer
+          example: 939
         team name:
           type: string
           example: Midtjylland
