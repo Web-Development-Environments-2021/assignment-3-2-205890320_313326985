@@ -258,7 +258,7 @@ async function nextMatchPlanned(){
 
 async function insertEventsLogDB(match_id, eventLogs){
   var duplicate = "";
-  for(var i=0 ; i < eventLogs.length ; i++){
+  for(var i=0 ; i < Object.keys(eventLogs).length ; i++){
     var minute = parseInt(eventLogs[i].minute)
     if(await checkDuplicateEvent(match_id, eventLogs[i].date_and_time_happend, minute, eventLogs[i].type, eventLogs[i].description)){
       duplicate += " event " + i;
@@ -372,7 +372,7 @@ async function checkDuplicateEvent(match_id, date_and_time_happend, minute, type
     description = '${description}'`
   );
 
-  if (event.find((x) => formatDateTime(x.date_and_time_happend) === date_and_time_happend)){
+  if (event.find((x) => formatDateTime(x.date_and_time_happend) === date_and_time_happend.slice(0,19).replace('T', ' '))){
     return true;
   }
   else{

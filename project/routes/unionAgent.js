@@ -167,15 +167,13 @@ router.put("/UpdateRefereeMatch", async (req, res, next) => {
 // show all the matches and referees in the system
 router.get("/UpdateRefereeMatch", async (req, res, next) =>{
   try{
-    const futureMatches = await matches_domain.getFutureMatches();
-    const pastMatches = await matches_domain.getPastMatches();
     const referees = await league_domain.getAllRelevantReferees();
 
-    if(futureMatches.length == 0 && pastMatches.length == 0 && referees.length == 0){
+    if(referees.length == 0){
       res.sendStatus(204);
     }
     else{
-       res.send({"futurematches":futureMatches, "pastmatches":pastMatches, "referees":referees });
+       res.send(referees);
     }
 
   }catch (error) {

@@ -986,6 +986,16 @@ components:
           format: URL
           example: https://cdn.sportmonks.com/images//soccer/teams/11/939.png
     LeagueManagementMatches:
+        type: object
+        properties:
+          pastMatches:
+            type: array
+            items:
+              $ref: '#/components/schemas/PastMatch'
+          futureMatches:
+            type: array
+            items:
+              $ref: '#/components/schemas/FutureMatch'
     Referee:
       type: object
       properties:
@@ -1007,13 +1017,4 @@ components:
             - Regular
             - Main
           example: Regular
-      type: object
-      properties:
-        pastMatches:
-          type: array
-          items:
-            $ref: '#/components/schemas/PastMatch'
-        futureMatches:
-          type: array
-          items:
-            $ref: '#/components/schemas/FutureMatch'
+

@@ -242,17 +242,6 @@ paths:
               schema:
                 type: object
                 properties:
-                  matches:
-                    type: object
-                    properties:
-                      futurematches:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/FutureMatchPreview'
-                      pastmatches:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/MatchPreview'
                   referees:
                     type: array
                     items:
