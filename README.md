@@ -1,7 +1,5 @@
-
-# Names & ID's
--   Shahar Shcheranski 313326985
--   Liad Nachshon 205890320
+# Football League Management project
+## BackEnd with Node.js
 
 # We have organized back-end structure - as a layered architecture
 -   HTTP requests as presentation layer
